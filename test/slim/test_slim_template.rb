@@ -8,35 +8,35 @@ class TestSlimTemplate < TestSlim
   end
 
   def test_registered_extension
-    assert_equal Slim::Template, Tilt['test.slim']
+    assert_equal Hamlet::Template, Tilt['test.hamlet']
   end
 
   def test_preparing_and_evaluating
-    template = Slim::Template.new { |t| "<p>Hello World!\n" }
+    template = Hamlet::Template.new { |t| "<p>Hello World!\n" }
     assert_equal "<p>Hello World!</p>", template.render
   end
 
   def test_passing_locals
-    template = Slim::Template.new { "<p>= 'Hey ' + name + '!'\n" }
+    template = Hamlet::Template.new { "<p>= 'Hey ' + name + '!'\n" }
     assert_equal "<p>Hey Joe!</p>", template.render(Object.new, :name => 'Joe')
   end
 
   def test_evaluating_in_an_object_scope
-    template = Slim::Template.new { "<p = 'Hey ' + @name + '!'\n" }
+    template = Hamlet::Template.new { "<p = 'Hey ' + @name + '!'\n" }
     scope = Object.new
     scope.instance_variable_set :@name, 'Joe'
     assert_equal "<p>Hey Joe!</p>", template.render(scope)
   end
 
   def test_passing_a_block_for_yield
-    template = Slim::Template.new { "<p = 'Hey ' + yield + '!'\n" }
+    template = Hamlet::Template.new { "<p = 'Hey ' + yield + '!'\n" }
     assert_equal "<p>Hey Joe!</p>", template.render { 'Joe' }
   end
 
   def test_backtrace_file_and_line_reporting_without_locals
     data = File.read(__FILE__).split("\n__END__\n").last
     fail unless data[0] == ?h
-    template = Slim::Template.new('test.slim', 10) { data }
+    template = Hamlet::Template.new('test.slim', 10) { data }
     begin
       template.render
       fail 'should have raised an exception'
@@ -49,7 +49,7 @@ class TestSlimTemplate < TestSlim
   def test_backtrace_file_and_line_reporting_with_locals
     data = File.read(__FILE__).split("\n__END__\n").last
     fail unless data[0] == ?h
-    template = Slim::Template.new('test.slim') { data }
+    template = Hamlet::Template.new('test.slim') { data }
     begin
       res = template.render(Object.new, :name => 'Joe', :foo => 'bar')
     rescue => ex
@@ -59,33 +59,33 @@ class TestSlimTemplate < TestSlim
   end
 
   def test_compiling_template_source_to_a_method
-    template = Slim::Template.new { |t| "Hello World!" }
+    template = Hamlet::Template.new { |t| "Hello World!" }
     template.render(Scope.new)
     method = template.send(:compiled_method, [])
     assert_kind_of UnboundMethod, method
   end
 
   def test_passing_locals
-    template = Slim::Template.new { "<p = 'Hey ' + name + '!'\n" }
+    template = Hamlet::Template.new { "<p = 'Hey ' + name + '!'\n" }
     assert_equal "<p>Hey Joe!</p>", template.render(Scope.new, :name => 'Joe')
   end
 
   def test_evaluating_in_an_object_scope
-    template = Slim::Template.new { "<p = 'Hey ' + @name + '!'\n" }
+    template = Hamlet::Template.new { "<p = 'Hey ' + @name + '!'\n" }
     scope = Scope.new
     scope.instance_variable_set :@name, 'Joe'
     assert_equal "<p>Hey Joe!</p>", template.render(scope)
   end
 
   def test_passing_a_block_for_yield
-    template = Slim::Template.new { "<p = 'Hey ' + yield + '!'\n" }
+    template = Hamlet::Template.new { "<p = 'Hey ' + yield + '!'\n" }
     assert_equal "<p>Hey Joe!</p>", template.render(Scope.new) { 'Joe' }
   end
 
   def test_backtrace_file_and_line_reporting_without_locals
     data = File.read(__FILE__).split("\n__END__\n").last
     fail unless data[0] == ?h
-    template = Slim::Template.new('test.slim', 10) { data }
+    template = Hamlet::Template.new('test.slim', 10) { data }
     begin
       template.render(Scope.new)
       fail 'should have raised an exception'
@@ -98,7 +98,7 @@ class TestSlimTemplate < TestSlim
   def test_backtrace_file_and_line_reporting_with_locals
     data = File.read(__FILE__).split("\n__END__\n").last
     fail unless data[0] == ?h
-    template = Slim::Template.new('test.slim') { data }
+    template = Hamlet::Template.new('test.slim') { data }
     begin
       res = template.render(Scope.new, :name => 'Joe', :foo => 'bar')
     rescue => ex

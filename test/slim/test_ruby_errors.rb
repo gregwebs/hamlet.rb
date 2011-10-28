@@ -3,9 +3,9 @@ require 'helper'
 class TestSlimRubyErrors < TestSlim
   def test_multline_attribute
     source = %q{
-p(data-1=1
+<p(data-1=1
 data2-=1)
-  p
+  <p
     = unknown_ruby_method
 }
 
@@ -14,7 +14,7 @@ data2-=1)
 
   def test_broken_output_line
     source = %q{
-p = hello_world + \
+<p = hello_world + \
   hello_world + \
   unknown_ruby_method
 }
@@ -34,9 +34,9 @@ p = hello_world + \
 
   def test_broken_output_line2
     source = %q{
-p = hello_world + \
+<p = hello_world + \
   hello_world
-p Hello
+<p Hello
 = unknown_ruby_method
 }
 
@@ -45,7 +45,7 @@ p Hello
 
   def test_output_block
     source = %q{
-p = hello_world "Hello Ruby" do
+<p = hello_world "Hello Ruby" do
   = unknown_ruby_method
 }
 
@@ -54,9 +54,9 @@ p = hello_world "Hello Ruby" do
 
   def test_output_block2
     source = %q{
-p = hello_world "Hello Ruby" do
+<p = hello_world "Hello Ruby" do
   = "Hello from block"
-p Hello
+<p Hello
 = unknown_ruby_method
 }
 
@@ -65,7 +65,7 @@ p Hello
 
   def test_text_block
     source = %q{
-p Text line 1
+<p>Text line 1
   Text line 2
 = unknown_ruby_method
 }
@@ -96,7 +96,7 @@ p Text line 1
 
   def test_embedded_ruby1
     source = %q{
-ruby:
+<ruby:
   a = 1
   b = 2
 = a + b
@@ -108,7 +108,7 @@ ruby:
 
   def test_embedded_ruby2
     source = %q{
-ruby:
+<ruby:
   a = 1
   unknown_ruby_method
 }
@@ -118,7 +118,7 @@ ruby:
 
   def test_embedded_markdown
     source = %q{
-markdown:
+<markdown:
   #Header
   Hello from #{"Markdown!"}
   "Second Line!"
@@ -130,7 +130,7 @@ markdown:
 
   def test_embedded_javascript
     source = %q{
-javascript:
+<javascript:
   alert();
   alert();
 = unknown_ruby_method
@@ -141,7 +141,7 @@ javascript:
 
   def test_invalid_nested_code
     source = %q{
-p
+<p
   - test = 123
     = "Hello from within a block! "
 }
@@ -159,7 +159,7 @@ p
 
   def test_invalid_embedded_engine
     source = %q{
-p
+<p
   embed_unknown:
     1+1
 }
@@ -169,7 +169,7 @@ p
 
   def test_explicit_end
     source = %q{
-div
+<div
   - if show_first?
       p The first paragraph
   - end

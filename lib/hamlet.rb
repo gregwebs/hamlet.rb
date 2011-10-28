@@ -1,6 +1,7 @@
-require 'slim'
-require 'parser'
+require 'rubygems'
 
-class Hamlet::Engine < Slim::Engine
-  replace Slim::Parser, Hamlet::Parser
-end
+require 'slim'
+
+require 'hamlet/parser'
+require 'hamlet/engine'
+require 'hamlet/template'
