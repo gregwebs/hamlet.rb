@@ -12,7 +12,7 @@ In hamlet you have:
     <p data-attr=foo>Text
       More Text
 
-see, it is just HTML! Closing tags are inferred from whitespace. Speaking of which, this is currently a bit of a slim frankenstein, but I added the same syntax that hamlet.js uses to indicate whitespace: a closing bracket
+see, it is just HTML! Designers love hamlet because it is just HTML! Closing tags are inferred from whitespace. Speaking of which, this is currently a bit of a Slim Frankenstein, but I added the same syntax that hamlet.js uses to indicate whitespace: a closing bracket
 
     <p>   White space to the left
       >   White space to the left again
