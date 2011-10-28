@@ -1,5 +1,3 @@
-require 'rubygems'
-
 require 'slim'
 
 require 'hamlet/parser'

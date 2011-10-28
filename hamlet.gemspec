@@ -4,7 +4,7 @@ require 'date'
 
 Gem::Specification.new do |s|
   s.name              = 'hamlet'
-  s.version           = 0.1
+  s.version           = 0.2
   s.date              = Date.today.to_s
   s.authors           = ['Greg Weber']
   s.email             = ['greg@gregweber.info']
@@ -19,7 +19,7 @@ Gem::Specification.new do |s|
   s.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
   s.require_paths = %w(lib)
 
-  s.add_dependency('slim', ['~> 1.0'])
+  s.add_dependency('slim', ['~> 1.0.0'])
 
   s.add_development_dependency('rake', ['>= 0.8.7'])
   s.add_development_dependency('sass', ['>= 3.1.0'])

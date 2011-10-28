@@ -1,8 +1,8 @@
-require 'slim/parser'
+require 'hamlet/forked_slim_parser'
 
 # @api private
 module Hamlet
-  class Parser < Slim::Parser
+  class Parser < ForkedSlim::Parser
     private
 
     def parse_line_indicators
