@@ -189,6 +189,12 @@ module ForkedSlim
           # Slim comment
           parse_comment_block
         end
+      when /\A([\|'])( ?)(.*)\Z/
+        # Found a text block.
+        trailing_ws = $1 == "'"
+        @stacks.last << [:slim, :interpolate, $3] unless $3.empty?
+        parse_text_block($3.empty? ? nil : @indents.last + $2.size + 1)
+        @stacks.last << [:static, ' '] if trailing_ws
       when /\A-/
         # Found a code block.
         # We expect the line to be broken or the next line to be indented.
@@ -205,7 +211,7 @@ module ForkedSlim
         @stacks.last << [:slim, :output, $1.empty?, parse_broken_line, block]
         @stacks.last << [:static, ' '] unless $2.empty?
         @stacks << block
-      when /\A<(\w+):\s*\Z/
+      when /\A(\w+):\s*\Z/
         # Embedded template detected. It is treated as block.
         block = [:multi]
         @stacks.last << [:newline] << [:slim, :embedded, $1, block]
@@ -215,15 +221,9 @@ module ForkedSlim
       when /\Adoctype\s+/i
         # Found doctype declaration
         @stacks.last << [:html, :doctype, $'.strip]
-      when /\A<([#\.]|\w[:\w-]*)/
+      when /\A([#\.]|\w[:\w-]*)/
         # Found a HTML tag.
-        parse_tag($1)
-      when /\A(> *)?(.*)?\Z/
-        # Found a text block.
-        trailing_ws = !$1
-        @stacks.last << [:slim, :interpolate, $2] unless $2.empty?
-        parse_text_block($2.empty? ? nil : @indents.last + $1.to_s.size)
-        @stacks.last << [:static, ' '] if trailing_ws
+        parse_tag($&)
       else
         syntax_error! 'Unknown line indicator'
       end
@@ -282,7 +282,6 @@ module ForkedSlim
     end
 
     def parse_tag(tag)
-      @line.slice!(0,1) # get rid of leading '<'
       if tag == '#' || tag == '.'
         tag = options[:default_tag]
       else
@@ -293,7 +292,7 @@ module ForkedSlim
       @stacks.last << tag
 
       case @line
-      when /\A\s*>?=(=?)('?)/
+      when /\A\s*=(=?)('?)/
         # Handle output code
         block = [:multi]
         @line = $'
@@ -303,12 +302,12 @@ module ForkedSlim
         @stacks << block
       when /\A\s*\//
         # Closed tag. Do nothing
-      when /\A\s*>?\s*\Z/
+      when /\A\s*\Z/
         # Empty content
         content = [:multi]
         tag << content
         @stacks << content
-      when /\A( ?)>?(.*)\Z/
+      when /\A( ?)(.*)\Z/
         # Text content
         content = [:multi, [:slim, :interpolate, $2]]
         tag << content
@@ -381,6 +380,7 @@ module ForkedSlim
       attributes
     end
 
+=begin
     def parse_ruby_attribute(outer_delimiter)
       value, count, delimiter, close_delimiter = '', 0, nil, nil
 
@@ -411,6 +411,7 @@ module ForkedSlim
 
       value
     end
+=end
 
     def parse_quoted_attribute(quote)
       value, count = '', 0

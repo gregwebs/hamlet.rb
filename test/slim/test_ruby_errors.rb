@@ -3,8 +3,8 @@ require 'helper'
 class TestSlimRubyErrors < TestSlim
   def test_multline_attribute
     source = %q{
-<p(data-1=1
-data2-=1)
+<p data-1=1
+data2-=1>
   <p
     = unknown_ruby_method
 }
@@ -150,7 +150,7 @@ data2-=1)
 
   def test_invalid_nested_output
     source = %q{
-p
+<p
   = "Hello Ruby!"
     = "Hello from within a block! "
 }
@@ -160,7 +160,7 @@ p
   def test_invalid_embedded_engine
     source = %q{
 <p
-  embed_unknown:
+  <embed_unknown:
     1+1
 }
 
@@ -180,7 +180,7 @@ p
 
   def test_id_attribute_merging2
     source = %{
-#alpha id="beta" Test it
+<#alpha id="beta" Test it
 }
     assert_runtime_error 'Multiple id attributes specified', source
   end

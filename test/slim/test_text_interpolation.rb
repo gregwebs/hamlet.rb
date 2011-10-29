@@ -20,7 +20,7 @@ class TestSlimTextInterpolation < TestSlim
   def test_interpolation_in_text
     source = %q{
 <p
- > #{hello_world} with "quotes"
+ #{hello_world} with "quotes"
 <p
 
  >A message from the compiler: #{hello_world}
@@ -55,7 +55,7 @@ class TestSlimTextInterpolation < TestSlim
 
   def test_interpolation_with_escaping
     source = %q{
-> #{evil_method}
+#{evil_method}
 }
 
     assert_html '&lt;script&gt;do_something_evil();&lt;&#47;script&gt;', source
@@ -63,7 +63,7 @@ class TestSlimTextInterpolation < TestSlim
 
   def test_interpolation_without_escaping
     source = %q{
-> #{{evil_method}}
+#{{evil_method}}
 }
 
     assert_html '<script>do_something_evil();</script>', source
@@ -71,7 +71,7 @@ class TestSlimTextInterpolation < TestSlim
 
   def test_interpolation_with_escaping_and_delimiter
     source = %q{
-> #{(evil_method)}
+#{(evil_method)}
 }
     assert_html '&lt;script&gt;do_something_evil();&lt;&#47;script&gt;', source
   end

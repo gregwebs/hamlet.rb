@@ -83,8 +83,7 @@ class TestSlimTemplate < TestSlim
   end
 
   def test_backtrace_file_and_line_reporting_without_locals
-    data = File.read(__FILE__).split("\n__END__\n").last
-    fail unless data[0] == ?h
+    data = load_file_data
     template = Hamlet::Template.new('test.slim', 10) { data }
     begin
       template.render(Scope.new)
@@ -95,9 +94,14 @@ class TestSlimTemplate < TestSlim
     end
   end
 
-  def test_backtrace_file_and_line_reporting_with_locals
+  def load_file_data
     data = File.read(__FILE__).split("\n__END__\n").last
-    fail unless data[0] == ?h
+    fail unless data[0] == ?<
+    data
+  end
+
+  def test_backtrace_file_and_line_reporting_with_locals
+    data = load_file_data
     template = Hamlet::Template.new('test.slim') { data }
     begin
       res = template.render(Scope.new, :name => 'Joe', :foo => 'bar')
@@ -109,8 +113,8 @@ class TestSlimTemplate < TestSlim
 end
 
 __END__
-html
-  body
+<html>
+  <body>
     <h1>= "Hey #{name}"
 
     = raise MockError

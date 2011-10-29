@@ -54,23 +54,14 @@ module Hamlet
       when /\A<([#\.]|\w[:\w-]*)/
         # Found a HTML tag.
         parse_tag($1)
-      when /\A(> *)?(.*)?\Z/
+      when /\A(?:>( *))?(.*)?\Z/
         # Found a text block.
-        trailing_ws = !$1
-        @stacks.last << [:slim, :interpolate, $2] unless $2.empty?
+        @stacks.last << [:slim, :interpolate, $1 ? $1 << $2 : $2] unless $2.empty?
         parse_text_block($2.empty? ? nil : @indents.last + $1.to_s.size)
-        @stacks.last << [:static, ' '] if trailing_ws
       else
         syntax_error! 'Unknown line indicator'
       end
       @stacks.last << [:newline]
-    end
-
-    def parse_comment_block
-      while !@lines.empty? && (@lines.first =~ /\A\s*\Z/ || get_indent(@lines.first) > @indents.last)
-        next_line
-        @stacks.last << [:newline]
-      end
     end
 
     def parse_text_block(text_indent = nil)
@@ -142,6 +133,69 @@ module Hamlet
         @stacks << content
         parse_text_block(@orig_line.size - @line.size + $1.size)
       end
+    end
+
+    def parse_attributes
+      attributes = [:html, :attrs]
+
+      # Find any literal class/id attributes
+      while @line =~ CLASS_ID_REGEX
+        # The class/id attribute is :static instead of :slim :text,
+        # because we don't want text interpolation in .class or #id shortcut
+        attributes << [:html, :attr, ATTR_SHORTCUT[$1], [:static, $2]]
+        @line = $'
+      end
+
+      # Check to see if there is a delimiter right after the tag name
+      delimiter = nil
+      if @line =~ DELIMITER_REGEX
+        delimiter = DELIMITERS[$&]
+        @line.slice!(0)
+      end
+
+      orig_line = @orig_line
+      lineno = @lineno
+      while true
+        # Parse attributes
+        attr_regex = delimiter ? /#{ATTR_NAME_REGEX}(=|\s|(?=#{Regexp.escape delimiter}))/ : /#{ATTR_NAME_REGEX}=/
+        while @line =~ attr_regex
+          @line = $'
+          name = $1
+          if delimiter && $2 != '='
+            attributes << [:slim, :attr, name, false, 'true']
+          elsif @line =~ /\A["']/
+            # Value is quoted (static)
+            @line = $'
+            attributes << [:html, :attr, name, [:slim, :interpolate, parse_quoted_attribute($&)]]
+          else
+            @line =~ /[^ >]+/
+            @line = $'
+            attributes << [:html, :attr, name, [:slim, :interpolate, $&]]
+          end
+        end
+
+        # No ending delimiter, attribute end
+        break unless delimiter
+
+        # Find ending delimiter
+        if @line =~ /\A\s*#{Regexp.escape delimiter}/
+          @line = $'
+          break
+        end
+
+        # Found something where an attribute should be
+        @line.lstrip!
+        syntax_error!('Expected attribute') unless @line.empty?
+
+        # Attributes span multiple lines
+        @stacks.last << [:newline]
+        next_line || syntax_error!("Expected closing delimiter #{delimiter}",
+                                   :orig_line => orig_line,
+                                   :lineno => lineno,
+                                   :column => orig_line.size)
+      end
+
+      attributes
     end
   end
 end

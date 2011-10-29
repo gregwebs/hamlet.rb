@@ -4,11 +4,11 @@ class TestSlimHtmlStructure < TestSlim
   def test_simple_render
     # Keep the trailing space behind "body "!
     source = %q{
-html
-  head
-    title Simple Test Title
-  body 
-    p Hello World, meet Slim.
+<html
+  <head
+    <title Simple Test Title
+  <body 
+    <p Hello World, meet Slim.
 }
 
     assert_html '<html><head><title>Simple Test Title</title></head><body><p>Hello World, meet Slim.</p></body></html>', source
@@ -17,9 +17,9 @@ html
   def test_html_tag_with_text_and_empty_line
     # Keep the trailing space behind "body "!
     source = %q{
-p Hello
+<p Hello
 
-p World
+<p World
 }
 
     assert_html "<p>Hello</p><p>World</p>", source
@@ -27,7 +27,7 @@ p World
 
   def test_html_namespaces
     source = %q{
-html:body
+<html:body
   html:p html:id="test" Text
 }
 
@@ -37,7 +37,7 @@ html:body
   def test_doctype
     source = %q{
 doctype 1.1
-html
+<html
 }
 
     assert_html '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd"><html></html>', source, :format => :xhtml
@@ -46,7 +46,7 @@ html
   def test_doctype_new_syntax
     source = %q{
 doctype 5
-html
+<html
 }
 
     assert_html '<!DOCTYPE html><html></html>', source, :format => :xhtml
@@ -55,7 +55,7 @@ html
   def test_doctype_new_syntax_html5
     source = %q{
 doctype html
-html
+<html
 }
 
     assert_html '<!DOCTYPE html><html></html>', source, :format => :xhtml
@@ -63,8 +63,8 @@ html
 
   def test_render_with_shortcut_attributes
     source = %q{
-h1#title This is my title
-#notice.hello.world
+<h1#title This is my title
+<#notice.hello.world
   = hello_world
 }
 
@@ -73,7 +73,7 @@ h1#title This is my title
 
   def test_render_with_overwritten_default_tag
     source = %q{
-#notice.hello.world
+<section #notice.hello.world
   = hello_world
 }
 
@@ -82,8 +82,7 @@ h1#title This is my title
 
   def test_render_with_text_block
     source = %q{
-p
-  |
+<p
    Lorem ipsum dolor sit amet, consectetur adipiscing elit.
 }
 
@@ -92,10 +91,9 @@ p
 
   def test_render_with_text_block_with_subsequent_markup
     source = %q{
-p
-  |
+<p
     Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-p Some more markup
+<p Some more markup
 }
 
     assert_html '<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p><p>Some more markup</p>', source
@@ -105,7 +103,7 @@ p Some more markup
     source = %q{
 ' this is
   a link to
-a href="link" page
+<a href="link" page
 }
 
     assert_html "this is\na link to <a href=\"link\">page</a>", source
@@ -113,13 +111,12 @@ a href="link" page
 
   def test_nested_text
     source = %q{
-p
- |
+<p
   This is line one.
    This is line two.
     This is line three.
      This is line four.
-p This is a new paragraph.
+<p This is a new paragraph.
 }
 
     assert_html "<p>This is line one.\n This is line two.\n  This is line three.\n   This is line four.</p><p>This is a new paragraph.</p>", source
@@ -127,11 +124,11 @@ p This is a new paragraph.
 
   def test_nested_text_with_nested_html_one_same_line
     source = %q{
-p
- | This is line one.
-    This is line two.
+<p
+ This is line one.
+  > This is line two.
  span.bold This is a bold line in the paragraph.
- |  This is more content.
+ > This is more content.
 }
 
     assert_html "<p>This is line one.\n This is line two.<span class=\"bold\">This is a bold line in the paragraph.</span> This is more content.</p>", source
@@ -139,7 +136,7 @@ p
 
   def test_nested_text_with_nested_html_one_same_line2
     source = %q{
-p
+<p
  |This is line one.
    This is line two.
  span.bold This is a bold line in the paragraph.
@@ -151,7 +148,7 @@ p
 
   def test_nested_text_with_nested_html
     source = %q{
-p
+<p
  |
   This is line one.
    This is line two.
@@ -166,7 +163,7 @@ p
 
   def test_simple_paragraph_with_padding
     source = %q{
-p    There will be 3 spaces in front of this line.
+<p    There will be 3 spaces in front of this line.
 }
 
     assert_html '<p>   There will be 3 spaces in front of this line.</p>', source
@@ -174,7 +171,7 @@ p    There will be 3 spaces in front of this line.
 
   def test_paragraph_with_nested_text
     source = %q{
-p This is line one.
+<p This is line one.
    This is line two.
 }
 
@@ -183,7 +180,7 @@ p This is line one.
 
   def test_paragraph_with_padded_nested_text
     source = %q{
-p  This is line one.
+<p  This is line one.
    This is line two.
 }
 
@@ -192,7 +189,7 @@ p  This is line one.
 
   def test_paragraph_with_attributes_and_nested_text
     source = %q{
-p#test class="paragraph" This is line one.
+<p#test class="paragraph">This is line one.
                          This is line two.
 }
 
@@ -201,9 +198,9 @@ p#test class="paragraph" This is line one.
 
   def test_output_code_with_leading_spaces
     source = %q{
-p= hello_world
-p = hello_world
-p    = hello_world
+<p= hello_world
+<p = hello_world
+<p    = hello_world
 }
 
     assert_html '<p>Hello World from @env</p><p>Hello World from @env</p><p>Hello World from @env</p>', source
@@ -211,7 +208,7 @@ p    = hello_world
 
   def test_single_quoted_attributes
     source = %q{
-p class='underscored_class_name' = output_number
+<p class='underscored_class_name'>= output_number
 }
 
     assert_html '<p class="underscored_class_name">1337</p>', source
@@ -219,7 +216,7 @@ p class='underscored_class_name' = output_number
 
   def test_nonstandard_attributes
     source = %q{
-p id="dashed-id" class="underscored_class_name" = output_number
+<p id="dashed-id" class="underscored_class_name">= output_number
 }
 
     assert_html '<p class="underscored_class_name" id="dashed-id">1337</p>', source
@@ -227,7 +224,7 @@ p id="dashed-id" class="underscored_class_name" = output_number
 
   def test_nonstandard_shortcut_attributes
     source = %q{
-p#dashed-id.underscored_class_name = output_number
+<p#dashed-id.underscored_class_name>= output_number
 }
 
     assert_html '<p class="underscored_class_name" id="dashed-id">1337</p>', source
@@ -235,7 +232,7 @@ p#dashed-id.underscored_class_name = output_number
 
   def test_dashed_attributes
     source = %q{
-p data-info="Illudium Q-36" = output_number
+<p data-info="Illudium Q-36">= output_number
 }
 
     assert_html '<p data-info="Illudium Q-36">1337</p>', source
@@ -243,7 +240,7 @@ p data-info="Illudium Q-36" = output_number
 
   def test_dashed_attributes_with_shortcuts
     source = %q{
-p#marvin.martian data-info="Illudium Q-36" = output_number
+<p#marvin.martian data-info="Illudium Q-36">= output_number
 }
 
     assert_html '<p class="martian" data-info="Illudium Q-36" id="marvin">1337</p>', source
@@ -251,15 +248,15 @@ p#marvin.martian data-info="Illudium Q-36" = output_number
 
   def test_parens_around_attributes
     source = %q{
-p(id="marvin" class="martian" data-info="Illudium Q-36") = output_number
+<p id="marvin" class="martian" data-info="Illudium Q-36"> = output_number
 }
 
-    assert_html '<p class="martian" data-info="Illudium Q-36" id="marvin">1337</p>', source
+    assert_html '<p class="martian" data-info="Illudium Q-36" id="marvin"> = output_number</p>', source
   end
 
   def test_square_brackets_around_attributes
     source = %q{
-p[id="marvin" class="martian" data-info="Illudium Q-36"] = output_number
+<p id="marvin" class="martian" data-info="Illudium Q-36"> = output_number
 }
 
     assert_html '<p class="martian" data-info="Illudium Q-36" id="marvin">1337</p>', source
@@ -267,7 +264,7 @@ p[id="marvin" class="martian" data-info="Illudium Q-36"] = output_number
 
   def test_parens_around_attributes_with_equal_sign_snug_to_right_paren
     source = %q{
-p(id="marvin" class="martian" data-info="Illudium Q-36")= output_number
+<p id="marvin" class="martian" data-info="Illudium Q-36">= output_number
 }
 
     assert_html '<p class="martian" data-info="Illudium Q-36" id="marvin">1337</p>', source
@@ -275,7 +272,7 @@ p(id="marvin" class="martian" data-info="Illudium Q-36")= output_number
 
   def test_static_empty_attribute
     source = %q{
-p(id="marvin" class="" data-info="Illudium Q-36")= output_number
+<p id="marvin" class="" data-info="Illudium Q-36">= output_number
 }
 
     assert_html '<p class="" data-info="Illudium Q-36" id="marvin">1337</p>', source
@@ -283,7 +280,7 @@ p(id="marvin" class="" data-info="Illudium Q-36")= output_number
 
   def test_dynamic_empty_attribute
     source = %q{
-p(id="marvin" class=nil other_empty=("".to_s) data-info="Illudium Q-36")= output_number
+<p id="marvin" class=nil other_empty=#{"".to_s} data-info="Illudium Q-36">= output_number
 }
 
     assert_html '<p data-info="Illudium Q-36" id="marvin">1337</p>', source
@@ -291,24 +288,24 @@ p(id="marvin" class=nil other_empty=("".to_s) data-info="Illudium Q-36")= output
 
   def test_closed_tag
     source = %q{
-closed/
+<closed/
 }
 
     assert_html '<closed />', source, :format => :xhtml
   end
 
   def test_attributs_with_parens_and_spaces
-    source = %q{label{ for='filter' }= hello_world}
+    source = %q{<label for=filter>= hello_world}
     assert_html '<label for="filter">Hello World from @env</label>', source
   end
 
   def test_attributs_with_parens_and_spaces2
-    source = %q{label{ for='filter' } = hello_world}
+    source = %q{<label for=filter>= hello_world}
     assert_html '<label for="filter">Hello World from @env</label>', source
   end
 
   def test_attributs_with_multiple_spaces
-    source = %q{label  for='filter'  class="test" = hello_world}
+    source = %q{<label for=filter class="test">= hello_world}
     assert_html '<label class="test" for="filter">Hello World from @env</label>', source
   end
 
@@ -322,7 +319,7 @@ closed id="test" /
 
   def test_closed_tag_with_attributes_and_parens
     source = %q{
-closed(id="test")/
+<closed id="test">/
 }
 
     assert_html '<closed id="test" />', source, :format => :xhtml
@@ -330,11 +327,11 @@ closed(id="test")/
 
   def test_render_with_html_comments
     source = %q{
-p Hello
+<p Hello
 /! This is a comment
 
    Another comment
-p World
+<p World
 }
 
     assert_html "<p>Hello</p><!--This is a comment\n\nAnother comment--><p>World</p>", source
@@ -358,81 +355,65 @@ p World
     assert_html "<!--[if IE]>hello<![endif]-->", source
   end
 
+=begin
   def test_multiline_attributes_with_method
-    source = %q{
-p<id="marvin"
+    str = %q{
+<p id="marvin"
 class="martian"
  data-info="Illudium Q-36"> = output_number
 }
-    Slim::Parser::DELIMITERS.each do |k,v|
-      str = source.sub('<',k).sub('>',v)
-      assert_html '<p class="martian" data-info="Illudium Q-36" id="marvin">1337</p>', str
-    end
+    assert_html '<p class="martian" data-info="Illudium Q-36" id="marvin">1337</p>', str
   end
 
   def test_multiline_attributes_with_text_on_same_line
-    source = %q{
-p<id="marvin"
+    str = %q{
+<p id="marvin"
   class="martian"
  data-info="Illudium Q-36"> THE space modulator
 }
-    Slim::Parser::DELIMITERS.each do |k,v|
-      str = source.sub('<',k).sub('>',v)
-      assert_html '<p class="martian" data-info="Illudium Q-36" id="marvin">THE space modulator</p>', str
-    end
+    assert_html '<p class="martian" data-info="Illudium Q-36" id="marvin">THE space modulator</p>', str
   end
 
   def test_multiline_attributes_with_nested_text
-    source = %q{
-p<id="marvin"
+    str = %q{
+<p id="marvin"
   class="martian"
 data-info="Illudium Q-36">
-  | THE space modulator
+  THE space modulator
 }
-    Slim::Parser::DELIMITERS.each do |k,v|
-      str = source.sub('<',k).sub('>',v)
-      assert_html '<p class="martian" data-info="Illudium Q-36" id="marvin">THE space modulator</p>', str
-    end
+    assert_html '<p class="martian" data-info="Illudium Q-36" id="marvin">THE space modulator</p>', str
   end
 
   def test_multiline_attributes_with_dynamic_attr
     source = %q{
-p<id=id_helper
+<p id=id_helper
   class="martian"
   data-info="Illudium Q-36">
-  | THE space modulator
+  THE space modulator
 }
-    Slim::Parser::DELIMITERS.each do |k,v|
-      str = source.sub('<',k).sub('>',v)
-      assert_html '<p class="martian" data-info="Illudium Q-36" id="notice">THE space modulator</p>', str
-    end
+    assert_html '<p class="martian" data-info="Illudium Q-36" id="notice">THE space modulator</p>', str
   end
 
   def test_multiline_attributes_with_nested_tag
     source = %q{
-p<id=id_helper
+<p id=id_helper
   class="martian"
   data-info="Illudium Q-36">
   span.emphasis THE
-  |  space modulator
+  > space modulator
 }
-    Slim::Parser::DELIMITERS.each do |k,v|
-      str = source.sub('<',k).sub('>',v)
-      assert_html '<p class="martian" data-info="Illudium Q-36" id="notice"><span class="emphasis">THE</span> space modulator</p>', str
-    end
+    assert_html '<p class="martian" data-info="Illudium Q-36" id="notice"><span class="emphasis">THE</span> space modulator</p>', source
   end
 
   def test_multiline_attributes_with_nested_text_and_extra_indentation
     source = %q{
-li< id="myid"
+<li id="myid"
     class="myclass"
 data-info="myinfo">
-  a href="link" My Link
+  <a href="link" My Link
 }
-    Slim::Parser::DELIMITERS.each do |k,v|
-      str = source.sub('<',k).sub('>',v)
-      assert_html '<li class="myclass" data-info="myinfo" id="myid"><a href="link">My Link</a></li>', str
-    end
+    assert_html '<li class="myclass" data-info="myinfo" id="myid"><a href="link">My Link</a></li>', str
   end
+=end
 
 end

@@ -14,7 +14,7 @@ class TestSlimWrapper < TestSlim
     source = %q{
 <p
  - person
-  <.name = name
+  <.name>= name
 }
     assert_html '<p><div class="name">Joe</div><div class="name">Jack</div></p>', source, :sections => true
   end
@@ -31,9 +31,9 @@ class TestSlimWrapper < TestSlim
 
   def test_method
     source = %q{
-<a href=output_number Link
+<a href=output_number>Link
 }
-    assert_html '<a href="1337">Link</a>', source, :sections => true
+    assert_html '<a href="output_number">Link</a>', source, :sections => true
   end
 
 end

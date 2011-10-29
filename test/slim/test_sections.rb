@@ -11,9 +11,9 @@ class TestSlimLogicLess < TestSlim
 
   def test_sections
     source = %q{
-p
+<p
  - person
-  .name = name
+  <.name = name
 }
 
     hash = {
@@ -28,9 +28,9 @@ p
 
   def test_sections_string_access
     source = %q{
-p
+<p
  - person
-  .name = name
+  <.name = name
 }
 
     hash = {
@@ -45,12 +45,12 @@ p
 
   def test_flag_section
     source = %q{
-p
+<p
  - show_person
    - person
-    .name = name
+    <.name = name
  - show_person
-   | shown
+   shown
 }
 
     hash = {
@@ -66,13 +66,13 @@ p
 
   def test_inverted_section
     source = %q{
-p
+<p
  - person
-  .name = name
+  <.name = name
  -! person
-  | No person
+  No person
  - !person
-  |  No person 2
+  > No person 2
 }
 
     hash = {}
@@ -82,7 +82,7 @@ p
 
   def test_output_with_content
     source = %{
-p = method_with_block do
+<p = method_with_block do
   block
 }
     assert_runtime_error 'Output statements with content are forbidden in sections mode', source, :sections => true

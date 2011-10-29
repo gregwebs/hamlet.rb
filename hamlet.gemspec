@@ -4,7 +4,7 @@ require 'date'
 
 Gem::Specification.new do |s|
   s.name              = 'hamlet'
-  s.version           = 0.2
+  s.version           = 0.2.1
   s.date              = Date.today.to_s
   s.authors           = ['Greg Weber']
   s.email             = ['greg@gregweber.info']
