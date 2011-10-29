@@ -3,9 +3,9 @@ require 'helper'
 class TestSlimCodeBlocks < TestSlim
   def test_render_with_output_code_block
     source = %q{
-p
+<p
   = hello_world "Hello Ruby!" do
-    | Hello from within a block!
+    Hello from within a block!
 }
 
     assert_html '<p>Hello Ruby! Hello from within a block! Hello Ruby!</p>', source
@@ -13,7 +13,7 @@ p
 
   def test_render_with_output_code_within_block
     source = %q{
-p
+<p
   = hello_world "Hello Ruby!" do
     = hello_world "Hello from within a block!"
 }
@@ -23,7 +23,7 @@ p
 
   def test_render_with_output_code_within_block_2
     source = %q{
-p
+<p
   = hello_world "Hello Ruby!" do
     = hello_world "Hello from within a block!" do
       = hello_world "And another one!"
@@ -34,10 +34,10 @@ p
 
   def test_output_block_with_arguments
     source = %q{
-p
+<p
   = define_macro :person do |first_name, last_name|
-    .first_name = first_name
-    .last_name = last_name
+    <.first_name>= first_name
+    <.last_name>= last_name
   == call_macro :person, 'John', 'Doe'
   == call_macro :person, 'Max', 'Mustermann'
 }
@@ -48,9 +48,9 @@ p
 
   def test_render_with_control_code_loop
     source = %q{
-p
+<p
   - 3.times do
-    | Hey!
+    Hey!
 }
 
     assert_html '<p>Hey!Hey!Hey!</p>', source
@@ -60,7 +60,7 @@ p
     source = %q{
 = hello_world "Hello Ruby!" do
   - if true
-    | Hello from within a block!
+    Hello from within a block!
 }
 
     assert_html 'Hello Ruby! Hello from within a block! Hello Ruby!', source

@@ -4,7 +4,7 @@ require 'date'
 
 Gem::Specification.new do |s|
   s.name              = 'hamlet'
-  s.version           = 0.2.1
+  s.version           = '0.3.0'
   s.date              = Date.today.to_s
   s.authors           = ['Greg Weber']
   s.email             = ['greg@gregweber.info']
@@ -16,7 +16,7 @@ Gem::Specification.new do |s|
   s.rubyforge_project = s.name
 
   s.files         = `git ls-files`.split("\n")
-  s.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
+  #s.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
   s.require_paths = %w(lib)
 
   s.add_dependency('slim', ['~> 1.0.0'])
@@ -29,6 +29,9 @@ Gem::Specification.new do |s|
   s.add_development_dependency('creole', ['>= 0'])
   s.add_development_dependency('builder', ['>= 0'])
   s.add_development_dependency('pry', ['>= 0'])
+  if RUBY_VERSION =~ /1.9/
+    s.add_development_dependency('ruby-debug19', ['>= 0'])
+  end
 
   unless defined?(RUBY_ENGINE) && RUBY_ENGINE == 'rbx'
     s.add_development_dependency('rcov', ['>= 0'])

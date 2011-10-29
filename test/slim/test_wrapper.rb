@@ -23,8 +23,8 @@ class TestSlimWrapper < TestSlim
     source = %q{
 <ul
  - people_with_locations
-  <li = name
-  <li = city
+  <li>= name
+  <li>= city
 }
     assert_html '<ul><li>Andy</li><li>Atlanta</li><li>Fred</li><li>Melbourne</li><li>Daniel</li><li>Karlsruhe</li></ul>', source, :sections => true
   end

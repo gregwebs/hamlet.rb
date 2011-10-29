@@ -3,9 +3,9 @@ require 'helper'
 class TestSlimEmbeddedEngines < TestSlim
   def test_render_with_erb
     source = %q{
-p
+<p
   - text = 'before erb block'
-  erb:
+  <erb:
     <b>Hello from <%= text.upcase %>!</b>
     Second Line!
     <% if true %><%= true %><% end %>
@@ -17,7 +17,7 @@ p
   def test_render_with_markdown
     # Keep the trailing spaces.
     source = %q{
-markdown:
+<markdown:
   #Header
   Hello from #{"Markdown!"}
   
@@ -37,7 +37,7 @@ markdown:
 
   def test_render_with_creole
     source = %q{
-creole:
+<creole:
   = head1
   == head2
 }
@@ -46,7 +46,7 @@ creole:
 
   def test_render_with_builder
     source = %q{
-builder:
+<builder:
   xml.p(:id => 'test') {
     xml.text!('Hello')
   }
@@ -56,7 +56,7 @@ builder:
 
   def test_render_with_wiki
     source = %q{
-wiki:
+<wiki:
   = head1
   == head2
 }
@@ -66,12 +66,12 @@ wiki:
   def test_render_with_javascript
     # Keep the trailing space behind "javascript:   "!
     source = %q{
-javascript:   
+<javascript:   
   $(function() {});
 
 
   alert('hello')
-p Hi
+<p>Hi
 }
     assert_html %{<script type="text/javascript">$(function() {});\n\n\nalert('hello')</script><p>Hi</p>}, source
   end
@@ -80,7 +80,7 @@ p Hi
     # Keep the trailing space behind "javascript:   "!
     source = %q{
 - func = "alert('hello');"
-javascript:   
+<javascript:   
   $(function() { #{func} });
 }
     assert_html %q|<script type="text/javascript">$(function() { alert('hello'); });</script>|, source
@@ -88,7 +88,7 @@ javascript:
 
   def test_render_with_ruby
     source = %q{
-ruby:
+<ruby:
   variable = 1 +
   2
 = variable
@@ -98,7 +98,7 @@ ruby:
 
   def test_render_with_scss
     source = %q{
-scss:
+<scss:
   $color: #f00;
   body { color: $color; }
 }
@@ -107,19 +107,19 @@ scss:
 
   def test_disabled_embedded_engine
     source = %{
-ruby:
+<ruby:
   Embedded Ruby
 }
     assert_runtime_error 'Embedded engine ruby is disabled', source, :enable_engines => %w(javascript)
 
     source = %{
-ruby:
+<ruby:
   Embedded Ruby
 }
     assert_runtime_error 'Embedded engine ruby is disabled', source, :enable_engines => %w(javascript)
 
     source = %{
-ruby:
+<ruby:
   Embedded Ruby
 }
     assert_runtime_error 'Embedded engine ruby is disabled', source, :disable_engines => %w(ruby)
@@ -127,13 +127,13 @@ ruby:
 
   def test_enabled_embedded_engine
     source = %q{
-javascript:
+<javascript:
   $(function() {});
 }
     assert_html '<script type="text/javascript">$(function() {});</script>', source, :disable_engines => %w(ruby)
 
     source = %q{
-javascript:
+<javascript:
   $(function() {});
 }
     assert_html '<script type="text/javascript">$(function() {});</script>', source, :enable_engines => %w(javascript)

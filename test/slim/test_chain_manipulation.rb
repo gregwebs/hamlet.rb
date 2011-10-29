@@ -19,7 +19,7 @@ p Test
 p Test
 }
     chain = proc do |engine|
-      engine.before(Slim::Parser, :WrapInput) do |input|
+      engine.before(Hamlet::Parser, :WrapInput) do |input|
         "p Header\n#{input}\np Footer"
       end
     end
@@ -32,7 +32,7 @@ p Test
 p Test
 }
     chain = proc do |engine|
-      engine.after(Slim::Parser, :ReplaceParsedExp) do |exp|
+      engine.after(Hamlet::Parser, :ReplaceParsedExp) do |exp|
         [:slim, :output, false, '1+1', [:multi]]
       end
     end

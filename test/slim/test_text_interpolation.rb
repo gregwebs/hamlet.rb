@@ -3,7 +3,7 @@ require 'helper'
 class TestSlimTextInterpolation < TestSlim
   def test_interpolation_in_attribute
     source = %q{
-<p id="a#{id_helper}b" = hello_world
+<p id="a#{id_helper}b">= hello_world
 }
 
     assert_html '<p id="anoticeb">Hello World from @env</p>', source
@@ -11,7 +11,7 @@ class TestSlimTextInterpolation < TestSlim
 
   def test_nested_interpolation_in_attribute
     source = %q{
-<p id="#{"abc#{1+1}" + "("}" = hello_world
+<p id="#{"abc#{1+1}" + "("}">= hello_world
 }
 
     assert_html '<p id="abc2(">Hello World from @env</p>', source
@@ -31,7 +31,7 @@ class TestSlimTextInterpolation < TestSlim
 
   def test_interpolation_in_tag
     source = %q{
-<p #{hello_world}
+<p>#{hello_world}
 }
 
     assert_html '<p>Hello World from @env</p>', source
@@ -39,7 +39,7 @@ class TestSlimTextInterpolation < TestSlim
 
   def test_escape_interpolation
     source = %q{
-<p \\#{hello_world}
+<p>\\#{hello_world}
 }
 
     assert_html '<p>#{hello_world}</p>', source
@@ -47,7 +47,7 @@ class TestSlimTextInterpolation < TestSlim
 
   def test_complex_interpolation
     source = %q{
-<p Message: #{message('hello', "user #{output_number}")}
+<p>Message: #{message('hello', "user #{output_number}")}
 }
 
     assert_html '<p>Message: hello user 1337</p>', source

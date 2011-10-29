@@ -66,19 +66,19 @@ class TestSlimTemplate < TestSlim
   end
 
   def test_passing_locals
-    template = Hamlet::Template.new { "<p = 'Hey ' + name + '!'\n" }
+    template = Hamlet::Template.new { "<p>= 'Hey ' + name + '!'\n" }
     assert_equal "<p>Hey Joe!</p>", template.render(Scope.new, :name => 'Joe')
   end
 
   def test_evaluating_in_an_object_scope
-    template = Hamlet::Template.new { "<p = 'Hey ' + @name + '!'\n" }
+    template = Hamlet::Template.new { "<p>= 'Hey ' + @name + '!'\n" }
     scope = Scope.new
     scope.instance_variable_set :@name, 'Joe'
     assert_equal "<p>Hey Joe!</p>", template.render(scope)
   end
 
   def test_passing_a_block_for_yield
-    template = Hamlet::Template.new { "<p = 'Hey ' + yield + '!'\n" }
+    template = Hamlet::Template.new { "<p>= 'Hey ' + yield + '!'\n" }
     assert_equal "<p>Hey Joe!</p>", template.render(Scope.new) { 'Joe' }
   end
 

@@ -13,7 +13,7 @@ class TestSlimLogicLess < TestSlim
     source = %q{
 <p
  - person
-  <.name = name
+  <.name>= name
 }
 
     hash = {
@@ -30,7 +30,7 @@ class TestSlimLogicLess < TestSlim
     source = %q{
 <p
  - person
-  <.name = name
+  <.name>= name
 }
 
     hash = {
@@ -48,7 +48,7 @@ class TestSlimLogicLess < TestSlim
 <p
  - show_person
    - person
-    <.name = name
+    <.name>= name
  - show_person
    shown
 }
@@ -68,7 +68,7 @@ class TestSlimLogicLess < TestSlim
     source = %q{
 <p
  - person
-  <.name = name
+  <.name>= name
  -! person
   No person
  - !person
@@ -82,7 +82,7 @@ class TestSlimLogicLess < TestSlim
 
   def test_output_with_content
     source = %{
-<p = method_with_block do
+<p>= method_with_block do
   block
 }
     assert_runtime_error 'Output statements with content are forbidden in sections mode', source, :sections => true

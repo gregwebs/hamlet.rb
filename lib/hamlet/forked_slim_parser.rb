@@ -74,12 +74,6 @@ module ForkedSlim
     DELIMITER_REGEX = /\A[\(\[\{]/
     ATTR_NAME_REGEX = '\A\s*(\w[:\w-]*)'
 
-    if RUBY_VERSION > '1.9'
-      CLASS_ID_REGEX = /\A(#|\.)([\w\u00c0-\uFFFF][\w:\u00c0-\uFFFF-]*)/
-    else
-      CLASS_ID_REGEX = /\A(#|\.)(\w[\w:-]*)/
-    end
-
     def reset(lines = nil, stacks = nil)
       # Since you can indent however you like in Slim, we need to keep a list
       # of how deeply indented you are. For instance, in a template like this:

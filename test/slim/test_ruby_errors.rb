@@ -1,6 +1,7 @@
 require 'helper'
 
 class TestSlimRubyErrors < TestSlim
+=begin multi
   def test_multline_attribute
     source = %q{
 <p data-1=1
@@ -11,10 +12,11 @@ data2-=1>
 
     assert_ruby_error NameError, "test.slim:5", source, :file => 'test.slim'
   end
+=end
 
   def test_broken_output_line
     source = %q{
-<p = hello_world + \
+<p>= hello_world + \
   hello_world + \
   unknown_ruby_method
 }
@@ -34,9 +36,9 @@ data2-=1>
 
   def test_broken_output_line2
     source = %q{
-<p = hello_world + \
+<p>= hello_world + \
   hello_world
-<p Hello
+<p>Hello
 = unknown_ruby_method
 }
 
@@ -45,7 +47,7 @@ data2-=1>
 
   def test_output_block
     source = %q{
-<p = hello_world "Hello Ruby" do
+<p>= hello_world "Hello Ruby" do
   = unknown_ruby_method
 }
 
@@ -54,7 +56,7 @@ data2-=1>
 
   def test_output_block2
     source = %q{
-<p = hello_world "Hello Ruby" do
+<p>= hello_world "Hello Ruby" do
   = "Hello from block"
 <p Hello
 = unknown_ruby_method
@@ -66,7 +68,7 @@ data2-=1>
   def test_text_block
     source = %q{
 <p>Text line 1
-  Text line 2
+   Text line 2
 = unknown_ruby_method
 }
 
@@ -75,9 +77,9 @@ data2-=1>
 
   def test_text_block2
     source = %q{
-|
-  Text line 1
-  Text line 2
+
+> Text line 1
+> Text line 2
 = unknown_ruby_method
 }
 
@@ -86,8 +88,8 @@ data2-=1>
 
   def test_comment
     source = %q{
-/ Comment line 1
-  Comment line 2
+# Comment line 1
+# Comment line 2
 = unknown_ruby_method
 }
 
