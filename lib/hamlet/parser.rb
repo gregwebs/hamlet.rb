@@ -45,57 +45,128 @@ module Hamlet
     end
 
   private
+    def parse_line
+      if @line =~ /\A\s*\Z/
+        @stacks.last << [:newline]
+        return
+      end
+
+      indent = get_indent(@line)
+
+      # Remove the indentation
+      @line.lstrip!
+      indent +=1 if @line[0] == '>'
+
+      # If there's more stacks than indents, it means that the previous
+      # line is expecting this line to be indented.
+      expecting_indentation = @stacks.size > @indents.size
+
+      if indent > @indents.last
+        # This line was actually indented, so we'll have to check if it was
+        # supposed to be indented or not.
+        unless expecting_indentation
+          syntax_error!('Unexpected indentation')
+        end
+
+        @indents << indent
+      else
+        # This line was *not* indented more than the line before,
+        # so we'll just forget about the stack that the previous line pushed.
+        @stacks.pop if expecting_indentation
+
+        # This line was deindented.
+        # Now we're have to go through the all the indents and figure out
+        # how many levels we've deindented.
+        while indent < @indents.last
+          @indents.pop
+          @stacks.pop
+        end
+
+        # This line's indentation happens lie "between" two other line's
+        # indentation:
+        #
+        #   hello
+        #       world
+        #     this      # <- This should not be possible!
+        syntax_error!('Malformed indentation') if indent != @indents.last
+      end
+
+      parse_line_indicators
+    end
 
     def parse_line_indicators
-      case @line
-      when /\A-/ # code block.
+      if @needs_space
+        @stacks.last << [:slim, :interpolate, "\n" ]
+        @stacks.last << [:newline]
+      end
+      @needs_space = false
+      case @line[0]
+      when '-' # code block.
         block = [:multi]
         @line.slice!(0)
         @stacks.last << [:slim, :control, parse_broken_line, block]
         @stacks << block
-      when /\A=/ # output block.
+      when '=' # output block.
         @line =~ /\A=(=?)('?)/
         @line = $'
         block = [:multi]
         @stacks.last << [:slim, :output, $1.empty?, parse_broken_line, block]
         @stacks.last << [:static, ' '] unless $2.empty?
         @stacks << block
-      when /\A<(\w+):\s*\Z/ # Embedded template. It is treated as block.
-        block = [:multi]
-        @stacks.last << [:newline] << [:slim, :embedded, $1, block]
-        @stacks << block
-        parse_text_block(nil, true)
-        return # Don't append newline, this has already been done before
-      when /\A<([#\.]|\w[:\w-]*)/ # HTML tag.
-        parse_tag($1)
-      when /\A<!--( ?)(.*)\Z/ # HTML comment
-        block = [:multi]
-        @stacks.last <<  [:html, :comment, block]
-        @stacks << block
-        @stacks.last << [:slim, :interpolate, $2] unless $2.empty?
-        parse_text_block($2.empty? ? nil : @indents.last + $1.size + 2)
-      when %r{\A#\[\s*(.*?)\s*\]\s*\Z} # HTML conditional comment
-        block = [:multi]
-        @stacks.last << [:slim, :condcomment, $1, block]
-        @stacks << block
-      when /\A(?:\s*>( *))?/ # text block.
-        @stacks.last << [:slim, :interpolate, $1 ? $1 << $' : $']
-        parse_text_block($'.empty? ? nil : @indents.last + $1.to_s.size)
+      when '<'
+        case @line
+        when /\A<(\w+):\s*\Z/ # Embedded template. It is treated as block.
+          block = [:multi]
+          @stacks.last << [:newline] << [:slim, :embedded, $1, block]
+          @stacks << block
+          parse_text_block(nil, :from_embedded)
+          return # Don't append newline, this has already been done before
+        when /\A<([#\.]|\w[:\w-]*)/ # HTML tag.
+          parse_tag($1)
+        when /\A<!--( ?)(.*)\Z/ # HTML comment
+          block = [:multi]
+          @stacks.last <<  [:html, :comment, block]
+          @stacks << block
+          @stacks.last << [:slim, :interpolate, $2] unless $2.empty?
+          parse_text_block($2.empty? ? nil : @indents.last + $1.size + 2)
+        end
       else
-        syntax_error! 'Unknown line indicator'
+        if @line =~ %r!\A#\[\s*(.*?)\s*\]\s*\Z! # HTML conditional comment
+          block = [:multi]
+          @stacks.last << [:slim, :condcomment, $1, block]
+          @stacks << block
+        else
+          push_text
+        end
       end
       @stacks.last << [:newline]
     end
 
-    def parse_text_block(text_indent = nil, special = nil)
+    def push_text
+      @needs_space = true
+      if @line[0] == '>'
+        @line.slice!(0)
+      end
+      if @line =~ /(\A|[^\\])#([^{]|\Z)/
+        @line = $` + $1
+      end
+      @stacks.last << [:slim, :interpolate, @line]
+    end
+
+    # This is fundamentally broken
+    # Can keep this for multi-lie html comment perhaps
+    # But don't lookahead on text otherwise
+    def parse_text_block(text_indent = nil, from = nil)
       empty_lines = 0
-      multi_line = false
-      if special == :from_tag
-        multi_line = true
-        special = nil
+      first_line = true
+      embedded = nil
+      case from
+      when :from_tag
+        first_line = true
+      when :from_embedded
+        embedded = true
       end
 
-      first_line = true
       close_bracket = false
       until @lines.empty?
         if @lines.first =~ /\A\s*>?\s*\Z/
@@ -135,7 +206,7 @@ module Hamlet
           if @line =~ /(\A|[^\\])#([^{]|\Z)/
             @line = $` + $1
           end
-          @stacks.last << [:newline] if multi_line && !special
+          @stacks.last << [:newline] if !first_line && !embedded
           @stacks.last << [:slim, :interpolate, (text_indent ? "\n" : '') + @line] << [:newline]
 
           # The indentation of first line of the text block
@@ -143,7 +214,6 @@ module Hamlet
           text_indent ||= indent
 
           first_line = false
-          multi_line = true
         end
       end
     end
@@ -161,6 +231,7 @@ module Hamlet
 
       case @line
       when /\A=(=?)('?)/ # Handle output code
+        @needs_space = true
         block = [:multi]
         @line = $'
         content = [:slim, :output, $1 != '=', parse_broken_line, block]
@@ -175,10 +246,10 @@ module Hamlet
       when %r!\A/>!
         # Do nothing for closing tag
       else # Text content
+        @needs_space = true
         content = [:multi, [:slim, :interpolate, @line]]
         tag << content
         @stacks << content
-        parse_text_block(@orig_line.size - @line.size, :from_tag)
       end
     end
 

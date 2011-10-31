@@ -1,9 +1,11 @@
 # encoding: utf-8
 
-require 'rubygems'
+require 'bundler'
+Bundler.setup
 require 'minitest/unit'
 require 'hamlet'
 require 'slim/grammar'
+$:.unshift(File.expand_path('..', __FILE__))
 
 MiniTest::Unit.autorun
 

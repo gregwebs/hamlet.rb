@@ -60,3 +60,14 @@ I added the same syntax that hamlet.js uses to indicate whitespace: a closing br
 ## Limitations
 
 I just hacked this up the other day - let me know if there are any issues. After some more experience using Slim's syntax I plan on trying to reduce the total available syntax.
+
+## Development
+
+Run tests with
+
+    rake test
+
+or
+
+    ruby -r ./test/slim/helper.rb TEST
+

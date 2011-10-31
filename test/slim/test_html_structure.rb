@@ -11,7 +11,7 @@ class TestSlimHtmlStructure < TestSlim
     <p>Hello World, meet Slim.
 }
 
-    assert_html '<html><head><title>Simple Test Title</title></head><body><p>Hello World, meet Slim.</p></body></html>', source
+    assert_html "<html><head><title>Simple Test Title</title></head>\n<body><p>Hello World, meet Slim.</p></body></html>", source
   end
 
   def test_html_tag_with_text_and_empty_line
@@ -22,7 +22,7 @@ class TestSlimHtmlStructure < TestSlim
 <p>World
 }
 
-    assert_html "<p>Hello</p><p>World</p>", source
+    assert_html "<p>Hello</p>\n<p>World</p>", source
   end
 
   def test_html_namespaces
@@ -68,7 +68,7 @@ class TestSlimHtmlStructure < TestSlim
   = hello_world
 }
 
-    assert_html '<h1 id="title">This is my title</h1><div class="hello world" id="notice">Hello World from @env</div>', source
+    assert_html %Q{<h1 id="title">This is my title</h1>\n<div class="hello world" id="notice">Hello World from @env</div>}, source
   end
 
   def test_render_with_overwritten_default_tag
@@ -96,17 +96,18 @@ class TestSlimHtmlStructure < TestSlim
 <p>Some more markup
 }
 
-    assert_html '<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p><p>Some more markup</p>', source
+    assert_html "<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>\n<p>Some more markup</p>", source
   end
 
   def test_render_with_text_block_with_trailing_whitespace
     source = %q{
-this is
-  a link to
-<a href="link">page
+<p>
+   this is
+  >  a link to
+   <a href="link">page
 }
 
-    assert_html "this is\n  a link to<a href=\"link\">page</a>", source
+    assert_html "<p>this is\n  a link to\n<a href=\"link\">page</a></p>", source
   end
 
   def test_nested_text
@@ -119,45 +120,44 @@ this is
 <p>This is a new paragraph.
 }
 
-    assert_html "<p>This is line one.\n This is line two.\n  This is line three.\n   This is line four.</p><p>This is a new paragraph.</p>", source
+    assert_html "<p>This is line one.\n This is line two.\n  This is line three.\n   This is line four.</p>\n<p>This is a new paragraph.</p>", source
   end
 
   def test_nested_text_with_nested_html_one_same_line
     source = %q{
 <p
- This is line one.
+  This is line one.
  > This is line two.
- <span.bold>This is a bold line in the paragraph.
+  <span.bold>This is a bold line in the paragraph.
  > This is more content.
 }
 
-    assert_html "<p>This is line one.\n This is line two.<span class=\"bold\">This is a bold line in the paragraph.</span> This is more content.</p>", source
+    assert_html "<p>This is line one.\n This is line two.\n<span class=\"bold\">This is a bold line in the paragraph.</span>\n This is more content.</p>", source
   end
 
   def test_nested_text_with_nested_html_one_same_line2
     source = %q{
 <p
- This is line one.
+  This is line one.
  > This is line two.
- <span.bold>This is a bold line in the paragraph.
+  <span.bold>This is a bold line in the paragraph.
  >  This is more content.
 }
 
-    assert_html "<p>This is line one.\n This is line two.<span class=\"bold\">This is a bold line in the paragraph.</span> This is more content.</p>", source
+    assert_html "<p>This is line one.\n This is line two.\n<span class=\"bold\">This is a bold line in the paragraph.</span>\n  This is more content.</p>", source
   end
 
   def test_nested_text_with_nested_html
     source = %q{
-<p
- >This is line one.
- > This is line two.
- >  This is line three.
- >   This is line four.
- <span.bold>This is a bold line in the paragraph.
- >  This is more content.
+<p>This is line one.
+  > This is line two.
+  >  This is line three.
+  >   This is line four.
+   <span.bold>This is a bold line in the paragraph.
+  > This is more content.
 }
 
-    assert_html "<p>This is line one.\n This is line two.\n  This is line three.\n   This is line four.<span class=\"bold\">This is a bold line in the paragraph.</span> This is more content.</p>", source
+    assert_html "<p>This is line one.\n This is line two.\n  This is line three.\n   This is line four.\n<span class=\"bold\">This is a bold line in the paragraph.</span>\n This is more content.</p>", source
   end
 
   def test_simple_paragraph_with_padding
@@ -202,7 +202,7 @@ this is
 <p>    =hello_world
 }
 
-    assert_html '<p>Hello World from @env</p><p> = hello_world</p><p>    =hello_world</p>', source
+    assert_html "<p>Hello World from @env</p>\n<p> = hello_world</p>\n<p>    =hello_world</p>", source
   end
 
   def test_single_quoted_attributes
@@ -333,7 +333,7 @@ this is
 <p>World
 }
 
-    assert_html "<p>Hello</p><!--This is a comment\n\nAnother comment--><p>World</p>", source
+    assert_html "<p>Hello</p>\n<!--This is a comment\n\nAnother comment--><p>World</p>", source
   end
 
   def test_render_with_html_conditional_and_tag
