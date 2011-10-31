@@ -107,7 +107,7 @@ class TestSlimHtmlStructure < TestSlim
    <a href="link">page
 }
 
-    assert_html "<p>this is\n  a link to\n<a href=\"link\">page</a></p>", source
+    assert_html "<p>this is  a link to\n<a href=\"link\">page</a></p>", source
   end
 
   def test_nested_text
@@ -120,7 +120,7 @@ class TestSlimHtmlStructure < TestSlim
 <p>This is a new paragraph.
 }
 
-    assert_html "<p>This is line one.\n This is line two.\n  This is line three.\n   This is line four.</p>\n<p>This is a new paragraph.</p>", source
+    assert_html "<p>This is line one. This is line two.  This is line three.   This is line four.</p>\n<p>This is a new paragraph.</p>", source
   end
 
   def test_nested_text_with_nested_html_one_same_line
@@ -132,7 +132,7 @@ class TestSlimHtmlStructure < TestSlim
  > This is more content.
 }
 
-    assert_html "<p>This is line one.\n This is line two.\n<span class=\"bold\">This is a bold line in the paragraph.</span>\n This is more content.</p>", source
+    assert_html "<p>This is line one. This is line two.\n<span class=\"bold\">This is a bold line in the paragraph.</span> This is more content.</p>", source
   end
 
   def test_nested_text_with_nested_html_one_same_line2
@@ -144,7 +144,7 @@ class TestSlimHtmlStructure < TestSlim
  >  This is more content.
 }
 
-    assert_html "<p>This is line one.\n This is line two.\n<span class=\"bold\">This is a bold line in the paragraph.</span>\n  This is more content.</p>", source
+    assert_html "<p>This is line one. This is line two.\n<span class=\"bold\">This is a bold line in the paragraph.</span>  This is more content.</p>", source
   end
 
   def test_nested_text_with_nested_html
@@ -157,7 +157,7 @@ class TestSlimHtmlStructure < TestSlim
   > This is more content.
 }
 
-    assert_html "<p>This is line one.\n This is line two.\n  This is line three.\n   This is line four.\n<span class=\"bold\">This is a bold line in the paragraph.</span>\n This is more content.</p>", source
+    assert_html "<p>This is line one. This is line two.  This is line three.   This is line four.\n<span class=\"bold\">This is a bold line in the paragraph.</span> This is more content.</p>", source
   end
 
   def test_simple_paragraph_with_padding
@@ -174,7 +174,7 @@ class TestSlimHtmlStructure < TestSlim
   > This is line two.
 }
 
-    assert_html "<p>This is line one.\n This is line two.</p>", source
+    assert_html "<p>This is line one. This is line two.</p>", source
   end
 
   def test_paragraph_with_padded_nested_text
@@ -183,7 +183,7 @@ class TestSlimHtmlStructure < TestSlim
   > This is line two.
 }
 
-    assert_html "<p> This is line one.\n This is line two.</p>", source
+    assert_html "<p> This is line one. This is line two.</p>", source
   end
 
   def test_paragraph_with_attributes_and_nested_text

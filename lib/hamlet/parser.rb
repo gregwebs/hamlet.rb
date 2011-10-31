@@ -95,7 +95,7 @@ module Hamlet
     end
 
     def parse_line_indicators
-      if @needs_space
+      if @needs_space and not @line[0] == '>'
         @stacks.last << [:slim, :interpolate, "\n" ]
         @stacks.last << [:newline]
       end
