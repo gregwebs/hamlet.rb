@@ -22,7 +22,7 @@ class TestSlimCodeStructure < TestSlim
       <p>The second paragraph
 }
 
-    assert_html '<div><p>The first paragraph</p><p>The second paragraph</p></div>', source
+    assert_html "<div><p>The first paragraph</p>\n<p>The second paragraph</p></div>", source
   end
 
   def test_render_with_parameterized_conditional
@@ -33,7 +33,6 @@ class TestSlimCodeStructure < TestSlim
   - else
       <p>The second paragraph
 }
-
     assert_html '<div><p>The second paragraph</p></div>', source
   end
 
@@ -46,7 +45,7 @@ class TestSlimCodeStructure < TestSlim
   = var
 }
 
-    assert_html '<div><p>The first paragraph</p>42</div>', source
+    assert_html "<div><p>The first paragraph</p>\n42</div>", source
   end
 
   def test_render_with_inline_condition
@@ -65,7 +64,7 @@ class TestSlimCodeStructure < TestSlim
     1
   - when 42
     42
-  > is the answer
+ > is the answer
 }
 
     assert_html '<p>42 is the answer</p>', source
@@ -79,7 +78,7 @@ class TestSlimCodeStructure < TestSlim
 <p>World
 }
 
-    assert_html '<p>Hello</p><p>World</p>', source
+    assert_html "<p>Hello</p>\n<p>World</p>", source
   end
 
   def test_render_with_yield

@@ -95,11 +95,6 @@ module Hamlet
     end
 
     def parse_line_indicators
-      if @needs_space and not @line[0] == '>'
-        @stacks.last << [:slim, :interpolate, "\n" ]
-        @stacks.last << [:newline]
-      end
-      @needs_space = false
       case @line[0]
       when '-' # code block.
         block = [:multi]
@@ -107,6 +102,7 @@ module Hamlet
         @stacks.last << [:slim, :control, parse_broken_line, block]
         @stacks << block
       when '=' # output block.
+        @needs_space = true
         @line =~ /\A=(=?)('?)/
         @line = $'
         block = [:multi]
@@ -114,16 +110,24 @@ module Hamlet
         @stacks.last << [:static, ' '] unless $2.empty?
         @stacks << block
       when '<'
+        if @needs_space && !(@line[0] == '>')
+          @stacks.last << [:slim, :interpolate, "\n" ]
+          @stacks.last << [:newline]
+        end
+        @needs_space = false
         case @line
         when /\A<(\w+):\s*\Z/ # Embedded template. It is treated as block.
+          @needs_space = false
           block = [:multi]
           @stacks.last << [:newline] << [:slim, :embedded, $1, block]
           @stacks << block
           parse_text_block(nil, :from_embedded)
           return # Don't append newline, this has already been done before
         when /\A<([#\.]|\w[:\w-]*)/ # HTML tag.
+          @needs_space = false
           parse_tag($1)
         when /\A<!--( ?)(.*)\Z/ # HTML comment
+          @needs_space = false
           block = [:multi]
           @stacks.last <<  [:html, :comment, block]
           @stacks << block
@@ -131,11 +135,21 @@ module Hamlet
           parse_text_block($2.empty? ? nil : @indents.last + $1.size + 2)
         end
       else
-        if @line =~ %r!\A#\[\s*(.*?)\s*\]\s*\Z! # HTML conditional comment
-          block = [:multi]
-          @stacks.last << [:slim, :condcomment, $1, block]
-          @stacks << block
+        if @line[0] == '#' and @line[1] != '{'
+          @needs_space = false
+          if @line =~ %r!\A#\[\s*(.*?)\s*\]\s*\Z! # HTML conditional comment
+            block = [:multi]
+            @stacks.last << [:slim, :condcomment, $1, block]
+            @stacks << block
+          else
+            # otherwise the entire line is commented - ignore
+          end
         else
+          if @needs_space and not @line[0] == '>'
+            @stacks.last << [:slim, :interpolate, "\n" ]
+            @stacks.last << [:newline]
+          end
+          @needs_space = true
           push_text
         end
       end
@@ -143,7 +157,6 @@ module Hamlet
     end
 
     def push_text
-      @needs_space = true
       if @line[0] == '>'
         @line.slice!(0)
       end
