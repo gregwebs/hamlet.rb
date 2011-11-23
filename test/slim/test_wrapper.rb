@@ -26,7 +26,7 @@ class TestSlimWrapper < TestSlim
   <li>= name
   <li>= city
 }
-    assert_html '<ul><li>Andy</li><li>Atlanta</li><li>Fred</li><li>Melbourne</li><li>Daniel</li><li>Karlsruhe</li></ul>', source, :sections => true
+    assert_html '<ul><li>Andy</li> <li>Atlanta</li><li>Fred</li> <li>Melbourne</li><li>Daniel</li> <li>Karlsruhe</li></ul>', source, :sections => true
   end
 
   def test_method

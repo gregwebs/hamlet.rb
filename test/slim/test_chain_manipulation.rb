@@ -16,15 +16,15 @@ p Test
 
   def test_before
     source = %q{
-p Test
+<p>Test
 }
     chain = proc do |engine|
       engine.before(Hamlet::Parser, :WrapInput) do |input|
-        "p Header\n#{input}\np Footer"
+        "<p>Header\n#{input}\n<p>Footer"
       end
     end
 
-    assert_html '<p>Header</p><p>Test</p><p>Footer</p>', source, :chain => chain
+    assert_html '<p>Header</p> <p>Test</p> <p>Footer</p>', source, :chain => chain
   end
 
   def test_after

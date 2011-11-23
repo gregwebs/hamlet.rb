@@ -26,7 +26,7 @@ class TestSlimTextInterpolation < TestSlim
  >A message from the compiler: #{hello_world}
 }
 
-    assert_html "<p>Hello World from @env with \"quotes\"</p>\n<p>A message from the compiler: Hello World from @env</p>", source
+    assert_html "<p>Hello World from @env with \"quotes\"</p> <p>A message from the compiler: Hello World from @env</p>", source
   end
 
   def test_interpolation_in_tag

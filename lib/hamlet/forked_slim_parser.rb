@@ -249,15 +249,10 @@ module ForkedSlim
 
           next_line
 
-          # The text block lines must be at least indented
-          # as deep as the first line.
-          if text_indent && indent < text_indent
-            @line.lstrip!
-            syntax_error!('Unexpected text indentation')
-          end
-
-          @line.slice!(0, text_indent || indent)
-          @stacks.last << [:slim, :interpolate, (text_indent ? "\n" : '') + @line] << [:newline]
+          @line.lstrip!
+          offset = text_indent ? indent - text_indent : 0
+          syntax_error!('Unexpected text indentation') if offset < 0
+          @stacks.last << [:slim, :interpolate, (text_indent ? "\n" : '') + (' ' * offset) + @line] << [:newline]
 
           # The indentation of first line of the text block
           # determines the text base indentation.
@@ -267,10 +262,10 @@ module ForkedSlim
     end
 
     def parse_broken_line
-      broken_line = @line.strip
+      broken_line = @line.sub(/[^\\]#[^{].*/, '').strip
       while broken_line[-1] == ?\\
         next_line || syntax_error!('Unexpected end of file')
-        broken_line << "\n" << @line.strip
+        broken_line << "\n" << @line.sub(/[^\\]#[^{].*/, '').strip
       end
       broken_line
     end

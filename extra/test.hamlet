@@ -1,9 +1,9 @@
 <doctype html
 
-<html
-  <head
-    <title Slim Test
-    <meta name="keywords" content="slim, syntax"
+<html>
+  <head>
+    <title Slim Test>
+    <meta name="keywords" content="slim, syntax">
 
     <javascript:
       $(function() {
@@ -16,22 +16,22 @@
     <erb:
       <%= some_method(@request) %>
 
-  <body
-    / comment block
-      with multiple lines
+  <body>
+    # comment block
+    # with multiple lines
+    # This is another line
+    <h1>= @page_title
+    <p#notice.message>
+      Welcome to the the syntax test.
+      This file is to exercise the various markup.
       This is another line
-    <h1 = @page_title
-    <p#notice.message
-      | Welcome to the the syntax test.
-        This file is to exercise the various markup.
-        This is another line
     - unless @users.empty?
-      <table
+      <table>
         - for user in users do
-          <tr
-            <td.user id=some_ruby('ere', @rme) data-test="some text #{with @ruby}" = @post.name 
+          <tr>
+            <td.user id=#{some_ruby('ere', @rme)} data-test="some text #{with @ruby}">= @post.name 
     - else
-      <p There are no users.
+      <p>There are no users.
 
     / Single comment line
     #content Hello #{@user.name}! Welcome to the test page!
@@ -39,12 +39,12 @@
 
     = function_with_many_parameters(:a, @variable, :option => 1)
 
-    <p.text
-      ' Another text block
-        with multiple lines
+    <p.text>
+      Another text block
+      with multiple lines
 
     = link_to('Test', @site)
 
-    .text#footer
-      ' Footer text block
-        with multiple lines
+    <.text#footer>
+      Footer text block
+      with multiple lines

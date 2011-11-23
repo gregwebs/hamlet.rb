@@ -16,7 +16,7 @@ class TestSlimHtmlEscaping < TestSlim
   > meet "Slim".
 }
 
-    assert_html "<p><Hello> World,\n meet \"Slim\".</p>", source
+    assert_html "<p><Hello> World, meet \"Slim\".</p>", source
   end
 
   def test_html_with_escaped_interpolation
@@ -32,7 +32,7 @@ class TestSlimHtmlEscaping < TestSlim
   def test_html_nested_escaping
     source = %q{
 = hello_world do
-  | escaped &
+  escaped &
 }
     assert_html 'Hello World from @env escaped &amp; Hello World from @env', source
   end

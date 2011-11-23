@@ -82,7 +82,7 @@ A new line is automatically added *after* tags with inner text. If you have mult
 
 ## Limitations
 
-I just hacked this up the other day - let me know if there are any issues.
+A space is not automatically added after a tag when looping through an array
 
 ## Development
 

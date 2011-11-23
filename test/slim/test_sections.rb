@@ -61,7 +61,7 @@ class TestSlimLogicLess < TestSlim
       ]
     }
 
-    assert_html '<p><div class="name">Joe</div><div class="name">Jack</div>shown</p>', source, :scope => hash, :sections => true
+    assert_html '<p><div class="name">Joe</div><div class="name">Jack</div> shown</p>', source, :scope => hash, :sections => true
   end
 
   def test_inverted_section
@@ -77,7 +77,7 @@ class TestSlimLogicLess < TestSlim
 
     hash = {}
 
-    assert_html '<p>No person No person 2</p>', source, :scope => hash, :sections => true
+    assert_html '<p> No person No person 2</p>', source, :scope => hash, :sections => true
   end
 
   def test_output_with_content

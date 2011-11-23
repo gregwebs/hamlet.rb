@@ -89,7 +89,7 @@ p==' hello_world
   = hello_world
 }
 
-    assert_html '<h1>This is my title</h1><p>Hello World from @env</p>', source
+    assert_html '<h1>This is my title</h1> <p>Hello World from @env</p>', source
   end
 
   def test_render_with_attribute_starts_with_keyword
@@ -114,7 +114,7 @@ p==' hello_world
 <p>=hello_world
 }
 
-    assert_html '<p>Hello World from @env</p><p>Hello World from @env</p>', source
+    assert_html '<p>Hello World from @env</p> <p>Hello World from @env</p>', source
   end
 
   def test_class_output_without_space
@@ -123,7 +123,7 @@ p==' hello_world
 <#test>==hello_world
 }
 
-    assert_html '<div class="test">Hello World from @env</div><div id="test">Hello World from @env</div>', source
+    assert_html '<div class="test">Hello World from @env</div> <div id="test">Hello World from @env</div>', source
   end
 
   def test_attribute_output_without_space
@@ -132,7 +132,7 @@ p==' hello_world
 <p id="test">==hello_world
 }
 
-    assert_html '<p id="test">Hello World from @env</p><p id="test">Hello World from @env</p>', source
+    assert_html '<p id="test">Hello World from @env</p> <p id="test">Hello World from @env</p>', source
   end
 
   def test_render_with_backslash_end

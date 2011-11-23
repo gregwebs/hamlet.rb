@@ -30,7 +30,7 @@ module Hamlet
         @stacks.last << [:newline]
         next_line 
       end
-      if @lines.first and @lines.first =~ /\A<doctype\s+([^>]*)/i
+      if @lines.first and @lines.first =~ /\A<doctype\s+([^>]*)>?/i
         if !$'.empty? and $'[0] !~ /\s*#/
           fail("did not expect content after doctype")
         end
@@ -111,8 +111,7 @@ module Hamlet
         @stacks << block
       when '<'
         if @needs_space && !(@line[0] == '>')
-          @stacks.last << [:slim, :interpolate, "\n" ]
-          @stacks.last << [:newline]
+          @stacks.last << [:slim, :interpolate, " " ]
         end
         @needs_space = false
         case @line
@@ -133,6 +132,8 @@ module Hamlet
           @stacks << block
           @stacks.last << [:slim, :interpolate, $2] unless $2.empty?
           parse_text_block($2.empty? ? nil : @indents.last + $1.size + 2)
+        else
+          syntax_error! 'Unknown line indicator'
         end
       else
         if @line[0] == '#' and @line[1] != '{'
@@ -146,7 +147,7 @@ module Hamlet
           end
         else
           if @needs_space and not @line[0] == '>'
-            @stacks.last << [:slim, :interpolate, "\n" ]
+            @stacks.last << [:slim, :interpolate, " " ]
             @stacks.last << [:newline]
           end
           @needs_space = true
@@ -214,10 +215,12 @@ module Hamlet
           end
 
           @line.slice!(0, text_indent || indent)
-          @line = $' if @line =~ /\A>/
-          # a code comment
-          if @line =~ /(\A|[^\\])#([^{]|\Z)/
-            @line = $` + $1
+          unless embedded
+            @line = $' if @line =~ /\A>/
+            # a code comment
+            if @line =~ /(\A|[^\\])#([^{]|\Z)/
+              @line = $` + $1
+            end
           end
           @stacks.last << [:newline] if !first_line && !embedded
           @stacks.last << [:slim, :interpolate, (text_indent ? "\n" : '') + @line] << [:newline]
@@ -287,15 +290,18 @@ module Hamlet
         while @line =~ /#{ATTR_NAME_REGEX}\s*(=\s*)?/
           name = $1
           @line = $'
-          if !$2
+          value = $2
+          if !value
             attributes << [:slim, :attr, name, false, 'true']
           elsif @line =~ /\A["']/
             # Value is quoted (static)
             @line = $'
             attributes << [:html, :attr, name, [:slim, :interpolate, parse_quoted_attribute($&)]]
-          elsif @line =~ /\A[^ >]+/
+          elsif @line =~ /\A(([^# >]+)|[^ >#]*#\{[^\}]+\}[^ >]*)/
             @line = $'
             attributes << [:html, :attr, name, [:slim, :interpolate, $&]]
+          elsif value =~ /\A=\s*\Z/
+            syntax_error!('Invalid empty attribute')
           end
         end
 

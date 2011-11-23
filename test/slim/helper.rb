@@ -33,7 +33,7 @@ class TestSlim < MiniTest::Unit::TestCase
   def assert_syntax_error(message, source, options = {})
     render(source, options)
     raise 'Syntax error expected'
-  rescue Slim::Parser::SyntaxError => ex
+  rescue ForkedSlim::Parser::SyntaxError => ex
     assert_equal message, ex.message
   end
 

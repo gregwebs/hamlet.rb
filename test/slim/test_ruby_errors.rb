@@ -72,15 +72,15 @@ data2-=1>
 = unknown_ruby_method
 }
 
-    assert_ruby_error NameError,"(__TEMPLATE__):4", source
+    assert_ruby_error NameError,"(__TEMPLATE__):5", source
   end
 
   def test_text_block2
     source = %q{
-
-> Text line 1
-> Text line 2
-= unknown_ruby_method
+<p>
+  > Text line 1
+  > Text line 2
+   = unknown_ruby_method
 }
 
     assert_ruby_error NameError,"(__TEMPLATE__):5", source

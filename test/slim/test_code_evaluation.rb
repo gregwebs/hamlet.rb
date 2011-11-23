@@ -11,7 +11,7 @@ class TestSlimCodeEvaluation < TestSlim
 
   def test_render_with_call_to_set_custom_attributes
     source = %q{
-<p data-id="#{id_helper}" data-class>="hello world"
+<p data-id="#{id_helper}" data-class="hello world">
   = hello_world
 }
 
@@ -100,7 +100,7 @@ class TestSlimCodeEvaluation < TestSlim
 
   def test_bypassing_escape_in_attribute
     source = %q{
-<form action==#{action_path(:page, :save)} method='post'>
+<form action=#{{action_path(:page, :save)}} method='post'>
 }
 
     assert_html '<form action="/action-page-save" method="post"></form>', source
@@ -119,7 +119,7 @@ class TestSlimCodeEvaluation < TestSlim
 <p id=#{hash[:a]}> Test it
 }
 
-    assert_html '<p id="The letter a">Test it</p>', source
+    assert_html '<p id="The letter a"> Test it</p>', source
   end
 
   def test_hash_call_in_attribute_with_ruby_evaluation
@@ -135,7 +135,7 @@ class TestSlimCodeEvaluation < TestSlim
 <p id=#{hash[:a] + hash[:a]}> Test it
 }
 
-    assert_html '<p id="The letter aThe letter a">Test it</p>', source
+    assert_html '<p id="The letter aThe letter a"> Test it</p>', source
   end
 
   def test_hash_call_in_delimited_attribute_with_ruby_evaluation_2
@@ -143,7 +143,7 @@ class TestSlimCodeEvaluation < TestSlim
 <p id=#{hash[:a] + hash[:a]}> Test it
 }
 
-    assert_html '<p id="The letter aThe letter a">Test it</p>', source
+    assert_html '<p id="The letter aThe letter a"> Test it</p>', source
   end
 
   def test_hash_call_in_delimited_attribute_with_ruby_evaluation_3
@@ -205,7 +205,7 @@ class TestSlimCodeEvaluation < TestSlim
     source = %{
 <.alpha class="beta" class=nil class="gamma">Test it
 }
-    assert_html '<div class="alpha beta gamma">Test it</div>', source
+    assert_html '<div class="alpha beta nil gamma">Test it</div>', source
   end
 
   def test_id_attribute_merging
@@ -224,7 +224,7 @@ class TestSlimCodeEvaluation < TestSlim
 
   def test_boolean_attribute_false
     source = %{
-<option selected=false>Text
+<option selected=>Text
 }
 
     assert_html '<option>Text</option>', source
@@ -232,7 +232,7 @@ class TestSlimCodeEvaluation < TestSlim
 
   def test_boolean_attribute_true
     source = %{
-<option selected=true>Text
+<option selected=selected>Text
 }
 
     assert_html '<option selected="selected">Text</option>', source
@@ -240,7 +240,7 @@ class TestSlimCodeEvaluation < TestSlim
 
   def test_boolean_attribute_dynamic
     source = %{
-<option selected=#{method_which_returns_true}>Text
+<option selected=selected>Text
 }
 
     assert_html '<option selected="selected">Text</option>', source
@@ -268,11 +268,11 @@ class TestSlimCodeEvaluation < TestSlim
 <option selected class="clazz">Text
 }
 
-    assert_html '<option class="clazz" selected="selected">Text</option><option class="clazz" selected="selected">Text</option>', source
+    assert_html '<option class="clazz" selected="selected">Text</option> <option class="clazz" selected="selected">Text</option>', source
   end
 
   def test_array_attribute
-    source = %{
+    source = %q{
 <.alpha class="beta" class=#{[:gamma, nil, :delta, [true, false]]}
 }
 

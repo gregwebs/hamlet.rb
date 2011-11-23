@@ -84,13 +84,13 @@ class TestSlimTemplate < TestSlim
 
   def test_backtrace_file_and_line_reporting_without_locals
     data = load_file_data
-    template = Hamlet::Template.new('test.slim', 10) { data }
+    template = Hamlet::Template.new('test.hamlet', 10) { data }
     begin
       template.render(Scope.new)
       fail 'should have raised an exception'
     rescue => ex
       assert_kind_of NameError, ex
-      assert_backtrace(ex, 'test.slim:12')
+      assert_backtrace(ex, 'test.hamlet:12')
     end
   end
 
@@ -102,12 +102,12 @@ class TestSlimTemplate < TestSlim
 
   def test_backtrace_file_and_line_reporting_with_locals
     data = load_file_data
-    template = Hamlet::Template.new('test.slim') { data }
+    template = Hamlet::Template.new('test.hamlet') { data }
     begin
       res = template.render(Scope.new, :name => 'Joe', :foo => 'bar')
     rescue => ex
       assert_kind_of MockError, ex
-      assert_backtrace(ex, 'test.slim:5')
+      assert_backtrace(ex, 'test.hamlet:5')
     end
   end
 end
