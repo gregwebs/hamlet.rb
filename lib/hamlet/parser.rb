@@ -297,7 +297,7 @@ module Hamlet
             # Value is quoted (static)
             @line = $'
             attributes << [:html, :attr, name, [:slim, :interpolate, parse_quoted_attribute($&)]]
-          elsif @line =~ /\A(([^# >]+)|[^ >#]*#\{[^\}]+\}[^ >]*)/
+          elsif @line =~ /\A(([^# >]|(#[^\{]))+|[^ >#]*#\{[^\}]+\}[^ >]*)/
             @line = $'
             attributes << [:html, :attr, name, [:slim, :interpolate, $&]]
           elsif value =~ /\A=\s*\Z/
