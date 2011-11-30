@@ -24,6 +24,7 @@ module Hamlet
       end
 
       result = [:multi]
+      return WhittleParser.new([result]).parse(str)
       reset(str.split($/), [result])
 
       while @lines.first && @lines.first =~ /\A\s*\Z/
