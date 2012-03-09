@@ -79,6 +79,10 @@ A new line is automatically added *after* tags with inner text. If you have mult
 ``` html
 <b>no space</b>none after bold.  Two spaces after a period is bad!
 
+## I18n support
+
+You can hook up i18n support the same way you would for other templating lanugages.
+[https://github.com/grosser/gettext_i18n_rails](This rails plugin) works out of the box.
 
 ## Limitations
 
