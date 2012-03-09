@@ -20,7 +20,7 @@ Gem::Specification.new do |s|
   s.require_paths = %w(lib)
 
   s.add_dependency('slim', ['~> 1.0.0'])
-  s.add_dependency('whittle', ['~> 0.0.4'])
+  s.add_dependency('whittle', ['>= 0.0.7'])
 
   s.add_development_dependency('rake', ['>= 0.8.7'])
   s.add_development_dependency('sass', ['>= 3.1.0'])

@@ -309,9 +309,7 @@ class TestSlimHtmlStructure < TestSlim
   end
 
   def test_closed_tag_with_attributes
-    source = %q{
-<closed id="test" />
-}
+    source = %q(<closed id="test" />)
 
     assert_html '<closed id="test" />', source, :format => :xhtml
   end
