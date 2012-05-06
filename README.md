@@ -87,6 +87,7 @@ You can hook up i18n support the same way you would for other templating lanugag
 ## Limitations
 
 A space is not automatically added after a tag when looping through an array
+Double quotes in attributes will get messed up: `click=do('ok!')` not `click=do("whoops!")`
 
 ## Development
 
