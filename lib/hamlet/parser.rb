@@ -23,8 +23,13 @@ module Hamlet
         str.force_encoding(old_enc) unless str.valid_encoding?
       end
 
+      parser = WhittleParser.new(options)
+      res = parser.parse(str)
+      require 'ap'
+      ap parser
+      ap res
+      return res #@stacks
       result = [:multi]
-      return WhittleParser.new([result]).parse(str)
       reset(str.split($/), [result])
 
       while @lines.first && @lines.first =~ /\A\s*\Z/

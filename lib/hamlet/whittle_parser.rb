@@ -13,8 +13,15 @@ class WhittleParser < Whittle::Parser
   DELIMITER_REGEX = /\A[\(\[\{]/
   ATTR_NAME_REGEX = '\A\s*(\w[:\w-]*)'
 
+  if RUBY_VERSION > '1.9'
+    CLASS_ID_REGEX = /\A\s*(#|\.)([\w\u00c0-\uFFFF][\w:\u00c0-\uFFFF-]*)/
+  else
+    CLASS_ID_REGEX = /\A\s*(#|\.)(\w[\w:-]*)/
+  end
+
   def initialize options = nil
-    options ||= {}
+    @stacks = []
+    @options = options || {}
     reset(nil, [])
   end
 
@@ -25,36 +32,32 @@ class WhittleParser < Whittle::Parser
   rule(:output_code => /\A=(=?)('?)/)
 
   rule(:line) do |r|
-    r[:s]
-    r['-', :rest].as { |s,_,rest| runtime.code s, rest }
+    r[:s,"\n"]
+    r['-', :rest].as { |s,rest| runtime.code s, rest.chomp }
 
-    r[:output_code, :rest].as {|s,indicator,rest|
-      runtime.output s, indicator, rest
-    }
+    r[:output_code, :rest].as {|s,indicator,rest| runtime.output s, indicator, rest.chomp }
 
-    r['<', :rest].as {|s,_,rest| runtime.tag s, rest }
+    r['<', :rest].as {|s,rest| runtime.tag s, rest.chomp }
 
-    r[:starting_comment].as {|s,rest|
-      runtime.starting_comment s, rest
-    }
-    r[:not_close_tag, :rest].as {|s,_,rest|
-      runtime.not_close_tag s, rest
-    }
+    r[:starting_comment, "\n"].as {|s,rest| runtime.starting_comment s, rest.chomp }
+    r[:not_close_tag, :rest].as {|s,rest| runtime.not_close_tag s, rest }
+    r["\n"]
     #  @stacks.last << [:newline]
   end
 
-  rule(:comment => /[^\\]#([^{]?.*)\Z/).as {|_| $1 }
+  rule(:comment => /[^\\]#([^{]?.*)\Z/).skip! #as {|_| $1 }
 
   comment = "#([^{]?.*)"
-  rule(:starting_comment => /\A#{comment}\Z/).as { $1 }
+  rule(:starting_comment => /\A#{comment}\Z/) #.as { $1 }
   rule(:comment => /\A[^\\]#{comment}\Z/)
 
-  rule(:broken_line => /\\\n.+/)
+  #rule(:broken_line => /\\\n.+/)
 
   rule(:rest) do |r|
-    r[:broken_line]
-    r[:not_comment]
-    r[:comment]
+    #r[:broken_line, "\n"]
+    r[:not_comment, :rest]
+    #r[:comment, "\n"]
+    r["\n"]
   end
 
   rule("\n")
@@ -73,17 +76,18 @@ class WhittleParser < Whittle::Parser
   rule(:not_close_tag => /[^>]/)
 
   rule(:html) do |r|
-    r[:html, "\n", :line].as { |list, _, id| list << id }
-    r[:line].as        { |line| line }
+    r[:line, :html]
+    r[:line]
   end
 
   rule(:doctype => /\A<doctype\s+([^>]*)>?\s*(#.*)?\Z/i).as { append [:html, :doctype, $1] }
-  rule(:blank => /\A\s*\Z/).as { append([:newline]) }
+  rule(:blank => /\A\s*\Z/).as { append [:newline] }
 
   rule(:document) do |r|
-    r[:blank]
+    r[:blank, :document]
     r[:doctype, :html]
     r[:html]
+    r["\n", :document]
   end
 
   start(:document)
@@ -92,7 +96,7 @@ class WhittleParser < Whittle::Parser
 
   def self.append *args; runtime.append *args end
   def append temple
-    @stacks.last << temple
+    (@stacks.last || []) << temple
   end
 
   def code space, rest
@@ -111,22 +115,18 @@ class WhittleParser < Whittle::Parser
   end
 
   def tag s, rest
-    if @needs_space && !(@line[0] == '>')
-      @stacks.last << [:slim, :interpolate, " " ]
-    end
-    @needs_space = false
     case rest
-    when /\A<(\w+):\s*\Z/ # Embedded template. It is treated as block.
+    when /\A(\w+):\s*\Z/ # Embedded template. It is treated as block.
       @needs_space = false
       block = [:multi]
       @stacks.last << [:newline] << [:slim, :embedded, $1, block]
       @stacks << block
       parse_text_block(nil, :from_embedded)
       return # Don't append newline, this has already been done before
-    when /\A<([#\.]|\w[:\w-]*)/ # HTML tag.
+    when /\A([#\.]|\w[:\w-]*)/ # HTML tag.
       @needs_space = false
       parse_tag($1)
-    when /\A<!--( ?)(.*)\Z/ # HTML comment
+    when /\A!--( ?)(.*)\Z/ # HTML comment
       @needs_space = false
       block = [:multi]
       @stacks.last <<  [:html, :comment, block]
@@ -134,7 +134,7 @@ class WhittleParser < Whittle::Parser
       @stacks.last << [:slim, :interpolate, $2] unless $2.empty?
       parse_text_block($2.empty? ? nil : @indents.last + $1.size + 2)
     else
-      syntax_error! 'Unknown line indicator'
+      syntax_error! "Unknown tag indicator: #{rest}"
     end
   end
 
@@ -227,38 +227,100 @@ class WhittleParser < Whittle::Parser
   end
 
   def parse_tag(tag)
-    @line.slice!(0,1) # get rid of leading '<'
     if tag == '#' || tag == '.'
-      tag = options[:default_tag]
-    else
-      @line.slice!(0, tag.size)
+      tag = @options[:default_tag]
     end
 
-    tag = [:html, :tag, tag, parse_attributes]
-    @stacks.last << tag
+    temple = [:html, :tag, tag, parse_attributes(tag.slice(0,tag.length))]
+    append temple
 
-    case @line
+    case tag
     when /\A=(=?)('?)/ # Handle output code
       @needs_space = true
       block = [:multi]
-      @line = $'
+      line = $'
       content = [:slim, :output, $1 != '=', parse_broken_line, block]
-      tag << content
-      @stacks.last << [:static, ' '] unless $2.empty?
+      temple << content
+      append [:static, ' '] unless $2.empty?
       @stacks << block
     when /\A\s*\Z/
       # Empty content
       content = [:multi]
-      tag << content
+      temple << content
       @stacks << content
     when %r!\A/>!
       # Do nothing for closing tag
     else # Text content
       @needs_space = true
-      content = [:multi, [:slim, :interpolate, @line]]
-      tag << content
+      content = [:multi, [:slim, :interpolate, tag]]
+      temple << content
       @stacks << content
     end
+  end
+
+  def parse_attributes tag
+    attributes = [:html, :attrs]
+    line = tag
+
+    # Find any literal class/id attributes
+    while line =~ CLASS_ID_REGEX
+      # The class/id attribute is :static instead of :slim :text,
+      # because we don't want text interpolation in .class or #id shortcut
+      attributes << [:html, :attr, ATTR_SHORTCUT[$1], [:static, $2]]
+      line = $'
+    end
+
+    # Check to see if there is a delimiter right after the tag name
+    delimiter = nil
+    if line =~ DELIMITER_REGEX
+      delimiter = DELIMITERS[$&]
+      line.slice!(0)
+    end
+
+    orig_line = @orig_line
+    lineno = @lineno
+    while true
+      # Parse attributes
+      attr_regex = delimiter ? /#{ATTR_NAME_REGEX}(=|\s|(?=#{Regexp.escape delimiter}))/ : /#{ATTR_NAME_REGEX}=/
+      while line =~ attr_regex
+        line = $'
+        name = $1
+        if delimiter && $2 != '='
+          attributes << [:slim, :attr, name, false, 'true']
+        elsif line =~ /\A["']/
+          # Value is quoted (static)
+          line = $'
+          attributes << [:html, :attr, name, [:slim, :interpolate, parse_quoted_attribute($&)]]
+        else
+          # Value is ruby code
+          escape = line[0] != ?=
+          line.slice!(0) unless escape
+          attributes << [:slim, :attr, name, escape, parse_ruby_attribute(delimiter)]
+        end
+      end
+
+      # No ending delimiter, attribute end
+      break unless delimiter
+
+      # Find ending delimiter
+      if line =~ /\A\s*#{Regexp.escape delimiter}/
+        line = $'
+        break
+      end
+
+      # Found something where an attribute should be
+      line.lstrip!
+      syntax_error!('Expected attribute') unless line.empty?
+
+      # Attributes span multiple lines
+      append [:newline]
+      next_line || syntax_error!("Expected closing delimiter #{delimiter}",
+                                 :orig_line => orig_line,
+                                 :lineno => lineno,
+                                 :column => orig_line.size)
+    end
+
+    attributes
   end
 
   def syntax_error!(message, args = {})
@@ -267,7 +329,7 @@ class WhittleParser < Whittle::Parser
     args[:lineno] ||= @lineno
     args[:column] ||= args[:orig_line] && args[:line] ?
                       args[:orig_line].size - args[:line].size : 0
-    raise SyntaxError.new(message, options[:file],
+    raise SyntaxError.new(message, @options[:file],
                           args[:orig_line], args[:lineno], args[:column])
   end
 
@@ -306,7 +368,7 @@ class WhittleParser < Whittle::Parser
     if rest =~ /(\A|[^\\])#([^{]|\Z)/
       rest = $` + $1
     end
-    @stacks.last << [:slim, :interpolate, rest]
+    append [:slim, :interpolate, rest]
   end
 
   def reset(lines = nil, stacks = nil)

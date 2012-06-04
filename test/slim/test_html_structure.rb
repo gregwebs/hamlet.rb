@@ -4,21 +4,22 @@ class TestSlimHtmlStructure < TestSlim
   def test_simple_render
     # Keep the trailing space behind "body "!
     source = %q{
-<html
-  <head
+<html>
+  <head>
     <title>Simple Test Title
-  <body 
+  <body>
     <p>Hello World, meet Slim.
 }
 
-    assert_html "<html><head><title>Simple Test Title</title></head> <body><p>Hello World, meet Slim.</p></body></html>", source
+    assert_html "<html><head><title>Simple Test Title</title></head><body><p>Hello World, meet Slim.</p></body></html>", source
   end
 
   def test_html_tag_with_text_and_empty_line
     # Keep the trailing space behind "body "!
-    source = %q{
+    source = 
+    %q{
 <p>Hello
-
+<p>Hello
 <p>World
 }
 
@@ -73,7 +74,7 @@ class TestSlimHtmlStructure < TestSlim
 
   def test_render_with_overwritten_default_tag
     source = %q{
-<section #notice.hello.world
+<section #notice.hello.world>
   = hello_world
 }
 

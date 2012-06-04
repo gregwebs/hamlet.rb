@@ -23,3 +23,7 @@ if ENV['RAILS']
     gem 'sqlite3-ruby'
   end
 end
+
+group :development do
+  gem 'awesome_print'
+end
