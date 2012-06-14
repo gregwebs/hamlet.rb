@@ -26,10 +26,10 @@ see, it is just HTML! Designers love Hamlet because it is just HTML! Closing tag
 
 ## Details
 
-You can see the [original hamlet templating langauge](http://www.yesodweb.com/book/shakespearean-templates) and the
+You can see the [original Haskell hamlet templating langauge](http://www.yesodweb.com/book/shakespearean-templates) and the
 [javascript port](hamlet: https://github.com/gregwebs/hamlet.js).
 
-This Hamlet works on top of [slim](https://github.com/stonean/slim/). Please take a look at the [slim documentation](http://slim-lang.com) if you are looking to see if a more advanced feature is supported.
+This Hamlet (ruby) works on top of [slim](https://github.com/stonean/slim/). Please take a look at the [slim documentation](http://slim-lang.com) if you are looking to see if a more advanced feature is supported.
 
 ## Difference with Slim
 
