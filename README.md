@@ -26,7 +26,7 @@ see, it is just HTML! Designers love Hamlet because it is just HTML! Closing tag
 
 ## Details
 
-You can see the [original hamlet templating langauge](http://www.yesodweb.com/book/templates) and the
+You can see the [original hamlet templating langauge](http://www.yesodweb.com/book/shakespearean-templates) and the
 [javascript port](hamlet: https://github.com/gregwebs/hamlet.js).
 
 This Hamlet works on top of [slim](https://github.com/stonean/slim/). Please take a look at the [slim documentation](http://slim-lang.com) if you are looking to see if a more advanced feature is supported.
@@ -83,7 +83,7 @@ A new line is automatically added *after* tags with inner text. If you have mult
 ## I18n support
 
 You can hook up i18n support the same way you would for other templating lanugages.
-[https://github.com/grosser/gettext_i18n_rails](This rails plugin) works out of the box.
+[This rails plugin](https://github.com/grosser/gettext_i18n_rails) works out of the box.
 
 ## Limitations
 
