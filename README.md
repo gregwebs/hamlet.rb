@@ -78,6 +78,7 @@ A new line is automatically added *after* tags with inner text. If you have mult
 
 ``` html
 <b>no space</b>none after bold.  Two spaces after a period is bad!
+```
 
 ## I18n support
 
