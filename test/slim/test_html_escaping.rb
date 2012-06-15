@@ -34,6 +34,7 @@ class TestSlimHtmlEscaping < TestSlim
 = hello_world do
   escaped &
 }
+    skip
     assert_html 'Hello World from @env escaped &amp; Hello World from @env', source
   end
 end

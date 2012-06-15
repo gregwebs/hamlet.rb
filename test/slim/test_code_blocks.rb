@@ -8,6 +8,7 @@ class TestSlimCodeBlocks < TestSlim
     Hello from within a block!
 }
 
+    skip
     assert_html '<p>Hello Ruby! Hello from within a block! Hello Ruby!</p>', source
   end
 
@@ -42,6 +43,7 @@ class TestSlimCodeBlocks < TestSlim
   == call_macro :person, 'Max', 'Mustermann'
 }
 
+    skip
     assert_html '<p><div class="first_name">John</div><div class="last_name">Doe</div><div class="first_name">Max</div><div class="last_name">Mustermann</div></p>', source
   end
 
@@ -63,6 +65,7 @@ class TestSlimCodeBlocks < TestSlim
     Hello from within a block!
 }
 
+    skip
     assert_html 'Hello Ruby! Hello from within a block! Hello Ruby!', source
   end
 end

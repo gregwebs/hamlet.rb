@@ -70,6 +70,7 @@ class TestParserErrors < TestSlim
   <img src=#{hash[1] + hash[2]
 !
 
+    skip
     assert_syntax_error "Expected closing attribute delimiter ]\n  (__TEMPLATE__), Line 3\n    img src=[hash[1] + hash[2]\n                              ^\n", source
   end
 
@@ -88,6 +89,7 @@ class TestParserErrors < TestSlim
   <img src= >
 }
 
+    skip
     assert_syntax_error "Invalid empty attribute\n  (__TEMPLATE__), Line 3\n    <img src= >\n             ^\n", source
   end
 

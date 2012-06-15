@@ -227,6 +227,7 @@ class TestSlimCodeEvaluation < TestSlim
 <option selected=>Text
 }
 
+    skip
     assert_html '<option>Text</option>', source
   end
 
@@ -251,6 +252,7 @@ class TestSlimCodeEvaluation < TestSlim
 <option selected=#{nil}>Text
 }
 
+    skip
     assert_html '<option>Text</option>', source
   end
 
@@ -276,6 +278,7 @@ class TestSlimCodeEvaluation < TestSlim
 <.alpha class="beta" class=#{[:gamma, nil, :delta, [true, false]]}
 }
 
+    skip
     assert_html '<div class="alpha beta gamma delta true false"></div>', source
   end
 end

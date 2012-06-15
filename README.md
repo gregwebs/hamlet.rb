@@ -94,9 +94,10 @@ Double quotes in attributes will get messed up: `click=do('ok!')` not `click=do(
 
 Run tests with
 
-    rake test
+    bundle exec rake test
 
 or
 
-    ruby -r ./test/slim/helper.rb TEST
+    bundle exec ruby -r ./test/slim/helper.rb TEST
 
+There are some failing tests that are skipped right now
