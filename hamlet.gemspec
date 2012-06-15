@@ -34,6 +34,10 @@ Gem::Specification.new do |s|
   end
 
   unless defined?(RUBY_ENGINE) && RUBY_ENGINE == 'rbx'
-    s.add_development_dependency('rcov', ['>= 0'])
+    if RUBY_VERSION =~ /1.9/
+      s.add_development_dependency('simplecov', ['>= 0'])
+    else
+      s.add_development_dependency('rcov', ['>= 0'])
+    end
   end
 end
